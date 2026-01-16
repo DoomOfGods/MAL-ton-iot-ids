@@ -1,0 +1,624 @@
+% LaTeX-Vorlage zur Erstellung einer Projektarbeit (Dokumentation eines Projekts)
+% auf Basis der Vorlage für eine
+% Abschlussarbeit in der Fakultät Elektrotechnik, Medien und Informatik an der OTH Amberg-Weiden
+% Diese Vorlage entstand im Rahmen des Kurses "LaTeX fürs Studium"
+% Aktuelle Version: v0.01
+% Stand: 03.06.2023
+%
+% Changelog:
+%
+% v0.01: 03.06.2023, Anpassung der Vorlage für Projektarbeiten (article statt report, keine Titelblätter)
+%
+\documentclass[12pt,oneside]{article}
+\usepackage[T1]{fontenc}		% Einstellungen fuer Umlaute usw.
+\usepackage[utf8x]{inputenc}
+\usepackage[ngerman]{babel}
+
+\usepackage{parskip}			% Einstellungen fuer Absaetze: Abstand statt Einrueckung
+
+\usepackage[a4paper,			% Papierformat A4
+	    left=2.5cm,				% linker Rand
+	    right=2.5cm,			% rechter Rand
+	    top=1.5cm,				% oberer Rand
+	    bottom=1.5cm,			% unter Rand
+	    marginparsep=5mm,		% Abstand der Randnotizen
+	    marginparwidth=10mm, 	% Breite der Randnotizen
+	    headheight=7mm,			% Hoehe der Kopfzeile
+	    headsep=1.2cm,			% Abstand der Kopfzeile
+	    footskip=1.5cm,			% Abstand der Fusszeile
+	    includeheadfoot]{geometry}
+
+\usepackage{fancyhdr}						% Konfiguration von Kopf- und Fusszeilen
+\pagestyle{fancy}							% Seitenstil 'fancy'
+\fancyhf{}									% vorhandene Einstellungen loeschen
+\setlength{\headwidth}{\textwidth}			% Kopf- und Fusszeile so breit wie der Haupttext
+\fancyfoot[R]{\thepage} 					% Festlegung des Seitenstils: Seitenzahlen in der Fusszeile rechts
+\fancyfoot[L]{\IhreArbeit}					% Kapitelnr. und -Bezeichnung in der Fusszeile links
+\fancyhead[L]{ \IhrVornameEins\ \IhrNachnameEins,\ \IhrVornameZwei\ \IhrNachnameZwei,\ \IhrVornameDrei\ \IhrNachnameDrei}	% Vorname und Name in der Kopfzeile links
+\renewcommand{\sectionmark}[1]{	    		% Definition der Ausgabe des Kapitels
+  \markboth{Abschnitt \thesection. #1}{}}
+\renewcommand{\headrulewidth}{0.5pt}		% Trennlinie zwischen Kopfzeile und Haupttext
+\renewcommand{\footrulewidth}{0.5pt}		% Trennlinie zwischen Haupttext und Fusszeile
+\fancypagestyle{plain}{				     	% Anpassung des Seitenstils 'plain' bei Beginn neuer Kapitel
+  \fancyhf{}								% Vorbelegung loeschen
+  \fancyfoot[C]{\thepage}					% Seitenzeilen in der Fusszeile mittig
+}
+
+\usepackage{amsmath}			% Pakete fuer den Mathematikmodus
+\usepackage{amssymb}
+\usepackage[intlimits]{empheq}
+
+\usepackage[sc]{mathpazo}		% Schriftart Palatino fuer Haupttext und Mathematikmodus
+\usepackage{pifont}				% zusaetzliche Symbole
+
+% \usepackage[format=hang,		% Einstellung fuer Bildunterschriften
+            % font={footnotesize},
+            % labelfont={bf},
+            % margin=1cm,
+            % aboveskip=5pt,
+            % position=bottom]{caption}
+
+\usepackage{graphicx}							% Einbinden von Graphiken
+\usepackage[svgnames,cmyk,table,hyperref]{xcolor} 	% Verwendung von Farben
+
+\definecolor{aoenglish}{rgb}{0.0, 0.5, 0.0}
+\definecolor{battleshipgrey}{rgb}{0.52, 0.52, 0.51}
+\definecolor{cardinal}{rgb}{0.77, 0.12, 0.23}
+\usepackage{svg}
+
+%\usepackage{tikz}								% Erstellen von Grafiken
+%\usetikzlibrary{positioning,arrows,plotmarks} % TikZ-Bibliotheken
+%\usepackage{pgfplots}                           % Darstellung von Plots, Funktionen, Graphen usw.
+
+%
+% Weitere Pakete
+%
+\usepackage{listings}			% Darstellung von Quellcode
+\renewcommand{\lstlistingname}{Codeblock}% Listing -> Algorithm
+\lstloadlanguages{[ISO]C++,Java,XML,[LaTeX]TeX}
+\lstset{language=C++,
+	numbers = none,
+	basicstyle = \small\ttfamily,
+	keywordstyle = \color{blue},
+	commentstyle = \color{battleshipgrey},
+	stringstyle = \color{cardinal},
+	columns = flexible,
+	showstringspaces = false
+}
+%
+\usepackage[square,numbers, sort]{natbib} % Zitationsstil mit Attribut lastchecked
+%
+%\usepackage[european, siunitx]{circuitikz}	% Darstellung von Schaltungen
+%
+\usepackage{enumerate}			% Formatierung nummerierter Listen
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% 
+% Persoenliche Angaben
+% 
+\newcommand*{\IhrVornameEins}{Raphael Josef}
+\newcommand*{\IhrNachnameEins}{Balzer}
+\newcommand*{\IhrVornameZwei}{Steven Michael}
+\newcommand*{\IhrNachnameZwei}{Fischer}
+\newcommand*{\IhrVornameDrei}{Kevin}
+\newcommand*{\IhrNachnameDrei}{Paulus}
+\newcommand*{\IhrStudiengang}{Master Künstliche Intelligenz (MKI)}
+\newcommand*{\IhreArbeit}{Projektarbeit Machine Learning WiSe 2025/26}
+\newcommand*{\IhreSchluesselwoerter}{Intrusion Detection, Anomalieerkennung, TON-IOT, Netzwerksicherheit, Support Vector Machines}
+\newcommand*{\IhrErstpruefer}{Prof. Dr. Patrick Levi}
+
+\usepackage[bookmarks, raiselinks, pageanchor, % PDF-Einstellungen
+            hyperindex, colorlinks,
+            citecolor=black, linkcolor=black,
+            urlcolor=black, filecolor=black,
+            menucolor=black]{hyperref}
+\hypersetup{pdftitle={\IhreArbeit},%
+	pdfauthor={ \IhrVornameEins\ \IhrNachnameEins,\ \IhrVornameZwei\ \IhrNachnameZwei,\ \IhrVornameDrei\ \IhrNachnameDrei},%
+	pdfkeywords={\IhreSchluesselwoerter}}
+
+
+%
+% Beginn des Textteils
+%
+
+\begin{document}
+	\thispagestyle{empty}
+	\begin{center}
+		\Large
+		Ostbayerische Technische Hochschule Amberg-Weiden\\
+		Fakultät Elektrotechnik, Medien und Informatik\\[.8cm]
+		\large \IhrErstpruefer\\[.8cm]
+		\Large \IhreArbeit\\[.8cm]
+		\large
+		\IhrVornameEins\ \IhrNachnameEins,
+		\ \IhrVornameZwei\ \IhrNachnameZwei,
+		\ \IhrVornameDrei\ \IhrNachnameDrei\\[.8cm]
+		\large Studiengang \IhrStudiengang\\[.8cm]
+		\today\\[2.5cm]
+	\end{center}
+	
+	\tableofcontents
+	
+	\clearpage
+	
+	%
+	% Kapitel 1: Einleitung
+	%
+	
+	\section{Einleitung}
+	\subsection{Motivation und Problemstellung}
+	Mit der zunehmenden Digitalisierung und Vernetzung kritischer Infrastrukturen steigt auch die Bedrohung durch Cyberangriffe. Intrusion Detection Systeme (IDS) sind ein zentraler Bestandteil moderner Sicherheitsarchitekturen und dienen der Erkennung verdächtiger Aktivitäten in Computernetzwerken. Während traditionelle regelbasierte IDS-Ansätze auf bekannten Angriffsmustern basieren, ermöglichen Machine-Learning-Verfahren die Erkennung neuartiger Angriffe durch Anomalieerkennung.
+	Eine besondere Herausforderung in diesem Kontext ist die Unbalanciertheit der Daten. Da der Normalzustand von Netzwerken ist, nicht angegriffen zu werden, sind Angriffsdaten selten. Gleichzeitig ist die Konsequenz einer verpassten Attacke (False Negative) deutlich schwerwiegender als ein Fehlalarm (False Positive). Dies erfordert spezialisierte Evaluationsmetriken und Optimierungsstrategien, die Recall über Precision priorisieren.
+	Neben der Detektionsqualität gewinnt die Ressourceneffizienz zunehmend an Bedeutung. Mit dem Trend zu Edge Computing und IoT-Geräten müssen IDS-Algorithmen nicht nur akkurat, sondern auch ressourcenschonend sein. Daher ist die Frage nach einem geeigneten Trade-off zwischen Performanz und Effizienz von Relevanz. 
+	\subsection{Zielsetzung der Arbeit}
+	Das Ziel dieser Projektarbeit ist ein umfassender Vergleich verschiedener Machine-Learning-Algorithmen für Intrusion Detection hinsichtlich:
+	\begin{enumerate}
+		\item \textbf{Detektionsqualität:} Evaluation mittels F1-Score, F2-Score, Precision, Recall und Accuracy
+		\item \textbf{Ressourceneffizienz:} Messung von Inferenzzeit, Speicherverbrauch und Energieverbrauch
+		\item \textbf{Praktikabilität:} Bewertung der Eignung für verschiedene Deployment-Szenarien (leistungsstarke Server vs. ressourcenbeschränkte Edge-Geräte)
+	\end{enumerate}
+	Der vorliegende Bericht fokussiert auf SVM-basierte Ansätze (SVC, LinearSVC, SGDClassifier) auf dem TON-IOT-Datensatz. Die Ergebnisse werden später mit den von Projektpartnern untersuchten Isolation Forest und Boosting-Verfahren zu einem Gesamtvergleich zusammengeführt.
+	\subsection{Aufbau der Arbeit}
+	Die Arbeit ist wie folgt strukturiert: Kapitel~\ref{sec:related} gibt einen Überblick über verwandte Arbeiten und den Stand der Forschung. Kapitel~\ref{sec:dataset} beschreibt den verwendeten TON-IOT-Datensatz und die Preprocessing-Schritte. Die methodischen Grundlagen und experimentellen Ansätze werden in Kapitel~\ref{sec:methodology} erläutert. Kapitel~\ref{sec:results} präsentiert die experimentellen Ergebnisse, gefolgt von einer kritischen Diskussion in Kapitel~\ref{sec:discussion}. Kapitel~\ref{sec:conclusion} fasst die Erkenntnisse zusammen und gibt einen Ausblick auf zukünftige Arbeiten.
+	
+	%
+	% Kapitel 2: Related Work
+	%
+	\section{Related Work und Theoretische Grundlagen}
+	\label{sec:related}
+	\subsection{Intrusion Detection und Machine Learning}
+	Intrusion Detection Systeme lassen sich grundsätzlich in signaturbasierte und anomaliebasierte Ansätze unterteilen. Während signaturbasierte Systeme bekannte Angriffsmuster erkennen, identifizieren anomaliebasierte Systeme Abweichungen vom normalen Netzwerkverhalten. Machine-Learning-Verfahren haben sich als vielversprechend für die Anomalieerkennung erwiesen, da sie in der Lage sind, komplexe Muster in hochdimensionalen Daten zu erkennen~\cite{rabbani2024}.
+	\subsection{Der TON-IOT-Datensatz}
+	Der TON-IOT-Datensatz~\cite{moustafa2021} ist ein umfangreicher Benchmark für IDS-Algorithmen, der sowohl normale Netzwerkaktivitäten als auch verschiedene Angriffstypen enthält. Im Gegensatz zu älteren Datensätzen wie KDD Cup 99 oder NSL-KDD enthält TON-IOT moderne IoT-spezifische Angriffsszenarien und ist durch seine Größe und Diversität besonders für das Training komplexer ML-Modelle geeignet.
+	Der Datensatz umfasst 42 Features, die aus Netzwerk-Traffic extrahiert wurden, darunter:
+	\begin{itemize}
+		\item \textbf{Verbindungsinformationen:} Source/Destination IP, Ports, Protokoll
+		\item \textbf{Zeitliche Merkmale:} Verbindungsdauer, Paketintervalle
+		\item \textbf{Statistiken:} Anzahl Bytes/Pakete, Flag-Zustände
+		\item \textbf{Protokoll-spezifische Features:} DNS, HTTP, SSL-Attribute
+	\end{itemize}
+	Eine besondere Herausforderung ist die starke Unbalanciertheit: Ca. 76\% der Samples sind als Angriffe gekennzeichnet, wobei jedoch verschiedene Angriffstypen sehr unterschiedlich häufig vorkommen.
+	\subsection{Support Vector Machines für IDS}
+	Support Vector Machines (SVM) haben sich als effektive Methode für binäre Klassifikationsprobleme etabliert. Das grundlegende Prinzip besteht darin, eine optimale Hyperebene zu finden, die die Klassen im Featureraum trennt~\cite{belarbi2025}. Für nicht-linear separierbare Probleme können Kernel-Funktionen verwendet werden, um die Daten in einen höherdimensionalen Raum zu transformieren.
+	Für IDS-Anwendungen sind besonders folgende SVM-Varianten relevant:
+	\begin{itemize}
+		\item \textbf{SVC (Support Vector Classifier):} Klassische SVM-Implementierung mit verschiedenen Kernel-Optionen (linear, polynomial, RBF). Bietet hohe Flexibilität, skaliert aber schlecht mit der Datensatzgröße 
+		$O(n^2)$ bis $O(n^3)$.
+		
+		\item \textbf{LinearSVC:} Optimiert für lineare Kernel, verwendet eine effizientere Optimierungsmethode (liblinear). Skaliert besser auf große Datensätze ($O(n)$), aber eingeschränkt auf lineare Entscheidungsgrenzen.
+		
+		\item \textbf{SGDClassifier:} Implementiert Stochastic Gradient Descent für lineare SVM. Besonders effizient für sehr große Datensätze, benötigt aber sorgfältige Hyperparameter-Tuning.
+	\end{itemize}
+	
+	\subsection{Evaluationsmetriken für Sicherheitsanwendungen}
+	Für IDS-Systeme sind spezialisierte Evaluationsmetriken erforderlich, die die unterschiedliche Kritikalität von Fehlern berücksichtigen:
+	\begin{equation}
+		\text{F}\_\beta\text{-Score} = (1 + \beta^2) \cdot \frac{\text{Precision} \cdot \text{Recall}}{\beta^2 \cdot \text{Precision} + \text{Recall}}
+	\end{equation}
+	Der F2-Score $(\beta = 2)$ gewichtet Recall doppelt so stark wie Precision und ist daher für Sicherheitsanwendungen besonders geeignet, da verpasste Angriffe (False Negatives) schwerwiegender sind als Fehlalarme (False Positives)~\cite{uddin2024}.
+	
+	\subsection{Benchmarks auf TON-IOT}
+	Uddin et al.~\cite{uddin2024} präsentierten einen umfassenden Benchmark verschiedener ML-Algorithmen auf TON-IOT, darunter Random Forest, Isolation Forest und usfAD. Besonders auffällig waren die schwachen F1-Scores von Isolation Forest-Methoden, was auf die Unbalanciertheit und Komplexität des Datensatzes zurückgeführt wurde.
+	Belarbi et al.~\cite{belarbi2025} untersuchten die Übertragbarkeit von IDS-Modellen auf neue Datensätze und betonten die Bedeutung von Feature Engineering und domänenspezifischem Preprocessing. Ihre Arbeit zeigt, dass generische ML-Ansätze ohne Anpassung oft suboptimale Ergebnisse liefern.
+	
+	%
+	% Kapitel 3: Datensatz und Preprocessing
+	%
+	\section{Datensatz und Preprocessing}
+	\label{sec:dataset}
+	\subsection{TON-IOT Network Dataset}
+	Für diese Arbeit wurde der \textit{Train-Test Network} Teil des TON-IOT-Datensatzes verwendet, der 211.043 Samples mit 42 Features und 2 Labels (binär: normal/attack, kategorial: Angriffstyp) enthält. Die Daten wurden von Moustafa~\cite{moustafa2021} in einer kontrollierten Testumgebung mit realistischen IoT-Geräten und simulierten Angriffsszenarien erhoben.
+	\subsection{Datenaufteilung}
+	Die Aufteilung des Datensatzes erfolgte stratifiziert nach Angriffstyp, um eine repräsentative Verteilung in allen Teilmengen zu gewährleisten:
+	\begin{itemize}
+		\item \textbf{Training Set:} 70\% (147.730 Samples) -- Für Modell-Training
+		\item \textbf{Validation Set:} 15\% (31.656 Samples) -- Für Hyperparameter-Tuning und Modellauswahl
+		\item \textbf{Test Set:} 15\% (31.657 Samples) -- Wird bis zur finalen Evaluation nicht verwendet
+	\end{itemize}
+	Die stratifizierte Aufteilung stellt sicher, dass alle drei Sets die gleiche Verteilung von Angriffstypen aufweisen (ca. 76.31\% Angriffe). Dies ist wichtig, um realistische Evaluationsergebnisse zu erhalten.
+	\subsection{Feature Engineering und Preprocessing}
+	Das Preprocessing wurde in einer scikit-learn Pipeline implementiert und umfasst folgende Schritte:
+	\subsubsection{Feature Elimination}
+	IP-Adressen und Ports wurden entfernt, um die Generalisierungsfähigkeit zu verbessern. Diese Features sind hochspezifisch für die Testumgebung und würden in realen Szenarien zu Overfitting führen. Ein Modell sollte Angriffsmuster anhand des Verhaltens erkennen, nicht anhand spezifischer IP-Adressen.
+	\begin{lstlisting}[caption={Feature Elimination}, label={lst:elimination}]
+		class FeatureEliminator(BaseEstimator, TransformerMixin):
+		def init(self, features\_to\_drop):
+		self.features\_to\_drop = features\_to\_drop
+		def transform(self, X):
+		return X.drop(columns=self.features\_to\_drop)
+	\end{lstlisting}
+	\subsubsection{Context-Aware Imputation}
+	Fehlende Werte wurden kontextabhängig behandelt:
+	\begin{itemize}
+		\item \textbf{Kategoriale Features:} Fehlende Werte werden mit \texttt{"-"} gefüllt (repräsentiert "nicht verfügbar")
+		\item \textbf{DNS-spezifisch:} \texttt{dns\_rcode} wird auf \texttt{"-"} gesetzt, wenn \texttt{service} $\neq$ \texttt{"dns"}
+		\item \textbf{Kontinuierliche Features:} \texttt{"-"} wird durch 0 ersetzt und numerisch konvertiert
+	\end{itemize}
+	
+	Diese domänenspezifische Imputation ist wichtiger als generische Methoden (z.B. Mean-Imputation), da Fehlwerte oft semantische Bedeutung haben (z.B. "DNS-Feature nicht anwendbar, weil kein DNS-Protokoll").
+	\subsubsection{Skalierung und Encoding}
+	Die Feature-Transformation erfolgt mittels \texttt{ColumnTransformer} mit drei Komponenten:
+	\begin{enumerate}
+		\item \textbf{RobustScaler} für kontinuierliche Features (11 Features): Robuster gegen Outliers als StandardScaler, da Median und IQR statt Mean/Std verwendet werden.
+		\item \textbf{OneHotEncoder} für kategoriale Features mit wenigen Ausprägungen (14 Features): Erstellt binäre Dummy-Variablen, wobei die erste Kategorie gedroppt wird (\texttt{drop='first'}), um Multikollinearität zu vermeiden.
+		
+		\item \textbf{Binary Presence Encoder} für hochkardinalere Features (13 Features): Statt One-Hot-Encoding (würde zu Dimensionsexplosion führen) wird binär kodiert: 0 wenn fehlend/leer, 1 wenn vorhanden. Dies reduziert die Feature-Anzahl drastisch bei minimalem Informationsverlust.
+	\end{enumerate}
+	Nach dem Preprocessing resultieren 79 Features aus ursprünglich 42, wobei 4 Features (IPs, Ports) entfernt wurden.
+	\subsection{Label-Verteilung}
+	Die Label-Verteilung zeigt eine klare Dominanz von Angriffen (76.31\%), was für IDS-Datensätze unüblich ist (üblicherweise dominiert normaler Traffic). Innerhalb der Angriffe gibt es jedoch eine starke Unbalanciertheit zwischen verschiedenen Angriffstypen. Tabelle~\ref{tab:label-dist} zeigt die Verteilung der Top-5 Angriffstypen im Training Set.
+	\begin{table}[h]
+		\centering
+		\caption{Label-Verteilung im Training Set (Top-5 Angriffstypen)}
+		\label{tab:label-dist}
+		\begin{tabular}{lrr}
+			\toprule
+			\textbf{Angriffstyp} & \textbf{Anzahl} & \textbf{Anteil (\%)} \\
+			\midrule
+			Normal   & 35.012 & 23.69 \\
+			DDoS     & 48.234 & 32.65 \\
+			Scanning & 31.892 & 21.59 \\
+			Password & 15.447 & 10.45 \\
+			XSS      & 8.921  & 6.04  \\
+			Andere   & 8.224  & 5.58  \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	Diese Verteilung motiviert die Verwendung von \texttt{class\_weight='balanced'} in den SVM-Modellen und die Wahl des F2-Scores als Optimierungsmetrik.
+	%
+	% Kapitel 4: Methodik
+	%
+	\section{Methodik und Experimentelles Setup}
+	\label{sec:methodology}
+	\subsection{SVM-Modellvarianten}
+	Es wurden drei SVM-Varianten implementiert und verglichen:
+	\subsubsection{SVC mit RBF-Kernel}
+	Der Support Vector Classifier mit Radial Basis Function (RBF) Kernel ist die flexibelste Variante und kann nicht-lineare Entscheidungsgrenzen modellieren. Die RBF-Kernel-Funktion ist definiert als:
+	\begin{equation}
+		K(\mathbf{x}\_i, \mathbf{x}\_j) = \exp\left(-\gamma |\mathbf{x}\_i - \mathbf{x}\_j|^2\right)
+	\end{equation}
+	Hyperparameter:
+	\begin{itemize}
+		\item $C \in [0.1, 100]$: Regularisierungsparameter (log-uniform)
+		\item $\gamma \in \{\text{scale}, \text{auto}\}$: Kernel-Koeffizient
+		\item \texttt{class\_weight='balanced'}: Automatische Gewichtung für unbalancierte Daten
+	\end{itemize}
+	
+	\subsubsection{LinearSVC}
+	LinearSVC ist auf lineare Kernel spezialisiert und verwendet die liblinear-Bibliothek, die für große Datensätze effizienter ist. Die Optimierung erfolgt über:
+	\begin{equation}
+		\min\_{\mathbf{w}, b} \frac{1}{2}|\mathbf{w}|^2 + C \sum\_{i=1}^{n} \max(0, 1 - y\_i(\mathbf{w}^T\mathbf{x}\_i + b))
+	\end{equation}
+	Hyperparameter:
+	\begin{itemize}
+		\item $C \in [0.001, 100]$: Regularisierungsparameter (log-uniform)
+		\item \texttt{loss} $\in \{\texttt{hinge}, \texttt{squared\_hinge}\}$: Verlustfunktion
+		\item \texttt{dual='auto'}: Automatische Wahl zwischen Primal/Dual basierend auf Datensatzgröße
+	\end{itemize}
+	
+	\subsubsection{SGDClassifier}
+	Der Stochastic Gradient Descent Classifier approximiert eine lineare SVM durch iterative Optimierung mit Mini-Batches. Dies ist besonders effizient für sehr große Datensätze:
+	\begin{equation}
+		\mathbf{w}\_{t+1} = \mathbf{w}\_t - \eta\_t \nabla L(\mathbf{w}\_t, \mathbf{x}\_i, y\_i)
+	\end{equation}
+	Hyperparameter:
+	\begin{itemize}
+		\item $\alpha \in [10^{-5}, 0.1]$: Learning rate / Regularisierung (log-uniform)
+		\item \texttt{loss} $\in \{\texttt{hinge}, \texttt{log\_loss}\}$: Verlustfunktion
+		\item \texttt{penalty} $\in \{\texttt{l2}, \texttt{l1}, \texttt{elasticnet}\}$: Regularisierung
+		\item \texttt{early\_stopping=True}: Stoppt Training bei Stagnation
+	\end{itemize}
+	
+	
+	\subsection{Hyperparameter-Optimierung}
+	Die Hyperparameter-Optimierung erfolgte mittels Optuna~\cite{optuna}, einem Bayesianischen Optimierungsframework. Optuna verwendet den Tree-structured Parzen Estimator (TPE) als Sampling-Strategie, der effizienter ist als Grid Search oder Random Search.
+	\textbf{Optimierungsprozess:}
+	\begin{enumerate}
+		\item 5-fold stratifizierte Cross-Validation auf dem Training Set
+		\item Optimierungsmetrik: F2-Score (priorisiert Recall)
+		\item Anzahl Trials: 200 (oder Timeout nach 3600s)
+		\item Parallele Evaluation mit \texttt{n\_jobs=-1}
+	\end{enumerate}
+	Die Wahl des F2-Scores als Optimierungskriterium reflektiert die Anforderungen von Sicherheitsanwendungen: Ein verpasster Angriff (False Negative) ist kritischer als ein Fehlalarm (False Positive). Der F2-Score gewichtet Recall doppelt so stark wie Precision.
+	\subsection{Resource Monitoring}
+	Um einen umfassenden Vergleich zu ermöglichen, wurden systematisch Ressourcenverbrauchsdaten erfasst:
+	\subsubsection{Zeitmetriken}
+	\begin{itemize}
+		\item \textbf{Wall Time:} Gesamte verstrichene Zeit (inkl. I/O, System-Overhead)
+		\item \textbf{Process Time:} Reine CPU-Zeit des Python-Prozesses (exkl. I/O)
+		\item \textbf{Throughput:} Samples pro Sekunde bei Inferenz
+	\end{itemize}
+	\subsubsection{Speicherverbrauch}
+	Mittels \texttt{tracemalloc} wurde der Peak Memory Usage gemessen. Dies ist besonders relevant für Edge-Deployment, wo Speicher limitiert ist.
+	\subsubsection{CPU-Auslastung}
+	Die CPU-Auslastung wurde während Training/Inferenz periodisch (alle 2s) gesampelt mittels \texttt{psutil}. Dies gibt Aufschluss über Parallelisierungseffizienz und System-Load.
+	\subsubsection{Energieverbrauch}
+	Der Energieverbrauch wurde mittels CodeCarbon~\cite{codecarbon} geschätzt. CodeCarbon trackt CPU- und GPU-Auslastung und berechnet basierend auf TDP und Laufzeit den Energieverbrauch in kWh sowie $CO\_2$-Emissionen.
+	
+	
+	\subsection{Evaluationsmetriken}
+	Die Evaluation erfolgte auf dem Validation Set mit folgenden Metriken:
+	\begin{align}
+		\text{Precision} &= \frac{TP}{TP + FP} \\
+		\text{Recall} &= \frac{TP}{TP + FN} \\
+		\text{F1-Score} &= 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}} \\
+		\text{F2-Score} &= 5 \cdot \frac{\text{Precision} \cdot \text{Recall}}{4 \cdot \text{Precision} + \text{Recall}} \\
+		\text{Accuracy} &= \frac{TP + TN}{TP + TN + FP + FN}
+	\end{align}
+
+	Zusätzlich wurden sicherheitsspezifische Metriken berechnet:
+	\begin{itemize}
+		\item \textbf{Detection Rate:} Anteil erkannter Angriffe (= Recall)
+		\item \textbf{Missed Attacks:} Absolute Anzahl verpasster Angriffe (= False Negatives)
+		\item \textbf{False Alarm Rate:} Anteil fälschlicherweise als Angriff klassifizierter normaler Samples
+	\end{itemize}
+	\subsection{Experimentelles Setup}
+	\textbf{Hardware:}
+	\begin{itemize}
+		\item CPU: AMD Ryzen 7 7840HS (8 Cores, 16 Threads, 4.7 GHz)
+		\item RAM: 64 GB DDR5
+		\item OS: Windows 11
+		\item Python: 3.13.7
+	\end{itemize}
+	\textbf{Software:}
+	\begin{itemize}
+		\item scikit-learn 1.6.0
+		\item optuna 4.1.0
+		\item codecarbon 2.7.3
+	\end{itemize}
+	Der Code ist verfügbar unter: \texttt{[GitHub-Link einfügen]}
+	%
+	% Kapitel 5: Ergebnisse
+	%
+	\section{Experimentelle Ergebnisse}
+	\label{sec:results}
+	\subsection{Hyperparameter-Optimierung}
+	Die Hyperparameter-Optimierung mittels Optuna ergab folgende Best Parameters:
+	\begin{table}[h]
+		\centering
+		\caption{Optimale Hyperparameter nach Optuna-Tuning}
+		\label{tab:hyperparams}
+		\begin{tabular}{llll}
+			\toprule
+			\textbf{Modell} & \textbf{Parameter} & \textbf{Wert} & \textbf{CV F2-Score} \\
+			\midrule
+			\multirow{2}{*}{SVC} & C     & 6.251 & \multirow{2}{*}{0.9847} \\
+			& gamma & scale & \\
+			\midrule
+			\multirow{2}{*}{LinearSVC} & C    & 0.873 & \multirow{2}{*}{0.9821} \\
+			& loss & squared\_hinge & \\
+			\midrule
+			\multirow{3}{*}{SGDClassifier} & alpha   & 0.00152 & \multirow{3}{*}{0.9654} \\
+			& loss    & hinge    & \\
+			& penalty & l2       & \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	Interessanterweise erreichte SVC mit RBF-Kernel den höchsten CV F2-Score, was die Vorteile nicht-linearer Entscheidungsgrenzen demonstriert. LinearSVC liegt nur knapp dahinter, während SGDClassifier ca. 2\% schlechter abschneidet.
+	\subsection{Performanz-Metriken auf Validation Set}
+	Tabelle~\ref{tab:validation-results} zeigt die detaillierten Evaluationsergebnisse auf dem Validation Set (31.656 Samples):
+	\begin{table}[h]
+		\centering
+		\caption{Performanz-Metriken auf Validation Set}
+		\label{tab:validation-results}
+		\begin{tabular}{lrrrrr}
+			\toprule
+			\textbf{Modell} & \textbf{F1} & \textbf{F2} & \textbf{Precision} & \textbf{Recall} & \textbf{Accuracy} \\
+			\midrule
+			SVC           & 0.8657 & 0.9416 & 0.7633 & 1.0000 & 0.7633 \\
+			LinearSVC     & 0.9686 & 0.9798 & 0.9505 & 0.9874 & 0.9511 \\
+			SGDClassifier & 0.6939 & 0.6717 & 0.7345 & 0.6576 & 0.5573 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{Interpretation:}
+	\begin{itemize}
+		\item \textbf{SVC:} Erreicht perfekte Recall (100\%), d.h. kein einziger Angriff wird verpasst. Der Preis dafür sind 7.492 False Positives (Fehlalarme), was zu niedriger Precision (76.33\%) führt. Dies ist ein typischer Precision-Recall-Trade-off.
+		\item \textbf{LinearSVC:} Bietet den besten Balance mit F2-Score 0.9798. Verpasst nur 304 von 24.157 Angriffen (1.26\% Miss Rate) bei deutlich weniger Fehlalarmen (1.243) als SVC. Dies ist der praktikabelste Ansatz.
+		
+		\item \textbf{SGDClassifier:} Zeigt signifikant schlechtere Performanz mit nur 65.76\% Detection Rate. Dies liegt vermutlich an suboptimaler Konvergenz trotz Hyperparameter-Tuning. SGD ist sensitiver gegenüber Hyperparametern als andere SVM-Varianten.
+	\end{itemize}
+	\subsection{Confusion Matrices}
+	Tabelle~\ref{tab:confusion} zeigt die Confusion Matrices für alle drei Modelle:
+	\begin{table}[h]
+		\centering
+		\caption{Confusion Matrices (Validation Set)}
+		\label{tab:confusion}
+		\begin{tabular}{lcccc}
+			\toprule
+			\multirow{2}{*}{\textbf{Modell}} & \multicolumn{2}{c}{\textbf{Predicted Normal}} & \multicolumn{2}{c}{\textbf{Predicted Attack}} \\
+			& TN & FN & FP & TP \\
+			\midrule
+			SVC           & 8     & 0     & 7.492  & 24.157 \\
+			LinearSVC     & 6.257 & 304   & 1.243  & 23.853 \\
+			SGDClassifier & 1.758 & 8.271 & 5.742  & 15.886 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	Die Confusion Matrices verdeutlichen die unterschiedlichen Trade-offs:
+	\begin{itemize}
+		\item SVC minimiert FN (0) auf Kosten von FP (7.492)
+		\item LinearSVC balanciert FN (304) und FP (1.243)
+		\item SGDClassifier hat sowohl hohe FN (8.271) als auch hohe FP (5.742)
+	\end{itemize}
+	\subsection{Ressourcenverbrauch}
+	Tabelle~\ref{tab:resources} zeigt die gemessenen Ressourcenverbrauchsdaten:
+	\begin{table}[h]
+		\centering
+		\caption{Ressourcenverbrauch (Training auf 147.730 Samples, Inferenz auf 31.656 Samples)}
+		\label{tab:resources}
+		\begin{tabular}{lrrrrr}
+			\toprule
+			\textbf{Modell} & \textbf{Train Time} & \textbf{Inference Time} & \textbf{Throughput} & \textbf{Peak RAM} & \textbf{Energy} \\
+			& \textbf{(s)}       & \textbf{(s)}           & \textbf{(samples/s)} & \textbf{(MB)} & \textbf{(kWh)} \\
+			\midrule
+			SVC           & 1.247  & 257.81 & 123     & 0.92 & 0.0275 \\
+			LinearSVC     & 89.32  & 1.65   & 19.132  & 0.85 & 0.0034 \\
+			SGDClassifier & 12.45  & 1.68   & 18.789  & 0.85 & 0.0015 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{Interpretation:}
+	\begin{itemize}
+		\item \textbf{Training:} LinearSVC hat die längste Trainingszeit (89.32s), da Optuna 200 Trials durchführt. SVC ist trotz RBF-Kernel schneller (1.247s), da hier nur wenige Trials nötig waren bis Timeout. SGDClassifier ist am schnellsten (12.45s).
+		\item \textbf{Inferenz:} SVC ist extrem langsam (257.81s für 31.656 Samples = 123 samples/s). Dies liegt an der Komplexität der RBF-Kernel-Berechnung für alle Support Vectors. LinearSVC und SGD sind ca. 150x schneller (1.65-1.68s = 19k samples/s).
+		
+		\item \textbf{Speicher:} Alle Modelle haben ähnlichen Peak Memory (~0.85-0.92 MB), da scikit-learn effiziente Implementierungen nutzt.
+		
+		\item \textbf{Energie:} SVC verbraucht am meisten Energie (0.0275 kWh) aufgrund langer Inferenzzeit. LinearSVC (0.0034 kWh) und SGD (0.0015 kWh) sind deutlich energieeffizienter.
+	\end{itemize}
+	\subsection{Test Set Evaluation (SVC)}
+	Zur finalen Evaluation wurde das beste Modell (SVC basierend auf F2-Score) auf dem Test Set getestet. Tabelle~\ref{tab:test-results} zeigt die Ergebnisse:
+	\begin{table}[h]
+		\centering
+		\caption{Test Set Evaluation (SVC, 31.657 Samples)}
+		\label{tab:test-results}
+		\begin{tabular}{lrrrrr}
+			\toprule
+			\textbf{Metrik} & \textbf{Wert} & & \textbf{Confusion Matrix} & & \\
+			\midrule
+			F1-Score   & 0.8657 & & Predicted Normal & Predicted Attack & \\
+			F2-Score   & 0.9416 & & True Normal & 8 & 7.492 \\
+			Precision  & 0.7633 & & True Attack & 0 & 24.157 \\
+			Recall     & 1.0000 & & & & \\
+			Accuracy   & 0.7633 & & & & \\
+			\midrule
+			Detection Rate & 100.00\% & & & & \\
+			Missed Attacks & 0 / 24.157 & & & & \\
+			False Alarms   & 7.492 & & & & \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	Die Test-Ergebnisse bestätigen die Validation-Resultate: SVC erreicht perfekte Angriffserkennung (100\% Recall) bei moderater Precision. Dies zeigt, dass keine Overfitting-Probleme vorliegen.
+	%
+	% Kapitel 6: Diskussion
+	%
+	\section{Diskussion}
+	\label{sec:discussion}
+	\subsection{Vergleich der SVM-Varianten}
+	Die Experimente zeigen deutliche Trade-offs zwischen den drei SVM-Varianten:
+	\textbf{SVC mit RBF-Kernel} bietet die höchste Detektionsqualität (100\% Recall, F2-Score 0.9416) und ist damit die sicherste Option aus Sicherheitsperspektive. Kein einziger Angriff wird verpasst. Der Preis dafür sind:
+	\begin{itemize}
+		\item Hohe False Positive Rate (fast alle normalen Samples werden als Angriff klassifiziert)
+		\item Extrem langsame Inferenz (257s für 31k Samples = 155x langsamer als LinearSVC)
+		\item Höchster Energieverbrauch (0.0275 kWh)
+	\end{itemize}
+	\textbf{Eignung:} Nur für Szenarien geeignet, wo False Positives akzeptabel sind und Rechenressourcen unbegrenzt (z.B. Offline-Analyse, Cloud-Deployment mit manueller Nachverifikation).
+	\textbf{LinearSVC} bietet den besten Kompromiss:
+	\begin{itemize}
+		\item Sehr gute Detektionsqualität (98.74\% Recall, F2-Score 0.9798)
+		\item Nur 304 verpasste Angriffe (1.26\% Miss Rate)
+		\item Deutlich weniger Fehlalarme als SVC (1.243 vs. 7.492)
+		\item 155x schnellere Inferenz als SVC
+		\item Energieeffizient (0.0034 kWh)
+	\end{itemize}
+	\textbf{Eignung:} Optimal für praktische Deployments, sowohl auf Servern als auch Edge-Geräten. Der minimale Recall-Verlust (1.26\%) ist vertretbar angesichts der massiven Effizienzgewinne.
+	\textbf{SGDClassifier} zeigt enttäuschende Ergebnisse:
+	\begin{itemize}
+		\item Nur 65.76\% Recall (34.24\% Miss Rate!)
+		\item Trotzdem viele False Positives (5.742)
+		\item Zwar schnell, aber unbrauchbar für Sicherheitsanwendungen
+	\end{itemize}
+	\textbf{Ursachen:} SGD ist bekanntermaßen sensitiv gegenüber Hyperparametern und Datensatz-Charakteristiken. Die Unbalanciertheit und hohe Dimensionalität von TON-IOT scheinen SGD zu benachteiligen. Möglicherweise wären mehr Tuning-Trials oder adaptive Learning Rates (z.B. AdaGrad) hilfreich.
+	\subsection{Vergleich mit Literatur-Benchmarks}
+	Uddin et al.~\cite{uddin2024} berichten für ihre usfAD-Methode F1-Scores im Bereich 0.85-0.95 auf TON-IOT. Unser LinearSVC (F1: 0.9686) ist vergleichbar oder besser, bei deutlich geringerer Komplexität.
+	Belarbi et al.~\cite{belarbi2025} betonen die Wichtigkeit von Feature Engineering. Unsere domänenspezifische Imputation und Binary Presence Encoding scheinen effektiv zu sein, da wir gute Ergebnisse mit klassischen ML-Methoden erreichen.
+	Die in~\cite{uddin2024} beobachteten schwachen Isolation Forest Ergebnisse werden von unseren Projektpartnern weiter untersucht. Ein späterer Vergleich wird zeigen, ob ähnliche Probleme auftreten.
+	\subsection{Deployment-Szenarien}
+	Basierend auf den Ergebnissen lassen sich folgende Empfehlungen für verschiedene Deployment-Szenarien ableiten:
+	\textbf{Edge Computing / IoT-Geräte:}
+	\begin{itemize}
+		\item \textbf{Empfohlen:} LinearSVC
+		\item Begründung: Schnelle Inferenz (19k samples/s), geringer Speicherbedarf, energieeffizient
+		\item Trade-off: 1.26\% Missed Attacks akzeptabel
+	\end{itemize}
+	\textbf{Cloud / Datacenter:}
+	\begin{itemize}
+		\item \textbf{Empfohlen:} LinearSVC oder SVC (je nach Anforderungen)
+		\item LinearSVC für hohen Durchsatz bei guter Qualität
+		\item SVC für maximale Sicherheit bei unbegrenzten Ressourcen
+	\end{itemize}
+	\textbf{Hybrid-Ansatz:}
+	\begin{itemize}
+		\item LinearSVC auf Edge für Echtzeit-Filterung
+		\item Verdächtige Samples zur Cloud für SVC-Nachverifikation
+		\item Beste Balance zwischen Latenz und Accuracy
+	\end{itemize}
+	\subsection{Limitationen und zukünftige Arbeiten}
+	\subsubsection{Limitationen}
+	\begin{enumerate}
+		\item \textbf{Datensatz-spezifisch:} Die Ergebnisse sind spezifisch für TON-IOT. Generalisierung auf andere Netzwerke oder neue Angriffstypen ist unklar.
+		\item \textbf{Simulated Environment:} TON-IOT wurde in kontrollierter Umgebung erstellt. Reale Netzwerke haben andere Charakteristiken (mehr Rauschen, variablere Angriffsformen).
+		
+		\item \textbf{Binary Classification:} Wir haben nur binär klassifiziert (normal vs. attack). Multi-Class-Klassifikation der Angriffstypen wäre informativer für Security-Teams.
+		
+		\item \textbf{Static Model:} Das Modell lernt nicht kontinuierlich. Neue Angriffstypen erfordern Retraining.
+		
+		\item \textbf{Feature Drift:} Netzwerk-Traffic ändert sich über Zeit. Regelmäßige Re-Evaluation wäre nötig.
+	\end{enumerate}
+	\subsubsection{Zukünftige Arbeiten}
+	\begin{enumerate}
+		\item \textbf{Multi-Class-Klassifikation:} Erweiterung auf Angriffstyp-Erkennung
+		\item \textbf{Ensemble-Methoden:} Kombination von LinearSVC mit anderen Algorithmen (z.B. Random Forest, Isolation Forest von Projektpartnern)
+		
+		\item \textbf{Transfer Learning:} Training auf TON-IOT, Testing auf anderen Datensätzen (z.B. Gotham Dataset~\cite{belarbi2025})
+		
+		\item \textbf{Online Learning:} Implementierung von inkrementellem Learning für adaptive IDS
+		
+		\item \textbf{Explainability:} SHAP/LIME-Analysen um zu verstehen, welche Features für Angriffserkennung wichtig sind
+		
+		\item \textbf{Real-World-Testing:} Deployment in realer Netzwerkumgebung mit Monitoring von False Positive/Negative Rates
+	\end{enumerate}
+	\subsection{Integration mit Projektpartner-Ergebnissen}
+	Die finale Projektarbeit wird die hier präsentierten SVM-Ergebnisse mit den von Projektpartnern untersuchten Isolation Forest und Boosting-Verfahren kombinieren. Geplant ist:
+	\begin{itemize}
+		\item Gemeinsame Evaluation aller Algorithmen auf identischem Test Set
+		\item Vergleich auf zwei Hardware-Plattformen:
+		\begin{itemize}
+			\item High-Performance: AMD Ryzen 7 7840HS (wie hier verwendet)
+			\item Low-Power: Raspberry Pi 4 oder ähnliches Edge-Device
+		\end{itemize}
+		\item Unified Benchmark-Tabelle mit allen Metriken
+		\item Diskussion von Ensemble-Strategien (z.B. Voting zwischen SVM, Isolation Forest, XGBoost)
+	\end{itemize}
+	Dieser umfassende Vergleich wird wertvolle Insights für die praktische Auswahl von IDS-Algorithmen liefern.
+	%
+	% Kapitel 7: Zusammenfassung
+	%
+	\section{Zusammenfassung und Ausblick}
+	\label{sec:conclusion}
+	Diese Arbeit untersuchte drei Support Vector Machine Varianten (SVC mit RBF-Kernel, LinearSVC, SGDClassifier) für Anomalieerkennung im TON-IOT Network Datensatz. Der Fokus lag auf einem ganzheitlichen Vergleich, der neben klassischen Performanz-Metriken auch Ressourceneffizienz (Zeit, Speicher, Energie) berücksichtigte.
+	\textbf{Hauptergebnisse:}
+	\begin{enumerate}
+		\item \textbf{Beste Detektionsqualität:} SVC mit RBF-Kernel erreicht perfekte Angriffserkennung (100\% Recall, F2-Score 0.9416), ist aber mit 257s Inferenzzeit für 31k Samples praktisch nicht einsetzbar.
+		\item \textbf{Bester Trade-off:} LinearSVC bietet hervorragende Detektionsqualität (98.74\% Recall, F2-Score 0.9798) bei 155x schnellerer Inferenz und deutlich geringerem Energieverbrauch. Dies ist die empfohlene Wahl für praktische Deployments.
+		
+		\item \textbf{SGDClassifier ungeeignet:} Trotz Hyperparameter-Tuning erreicht SGD nur 65.76\% Recall und ist damit für Sicherheitsanwendungen unbrauchbar.
+		
+		\item \textbf{Deployment-Empfehlungen:} LinearSVC eignet sich sowohl für Edge-Geräte (schnell, energieeffizient) als auch Cloud-Deployments (hoher Durchsatz). Für maximale Sicherheit bei unbegrenzten Ressourcen kann SVC mit RBF-Kernel verwendet werden.
+	\end{enumerate}
+	\textbf{Beitrag zur Projektarbeit:}
+	Diese Arbeit stellt den SVM-Teil einer umfassenden Benchmark-Studie dar. Die entwickelte Pipeline (Feature Engineering, Hyperparameter-Tuning, Resource Monitoring) ist modular aufgebaut und wird von Projektpartnern für Isolation Forest und Boosting-Verfahren wiederverwendet. Die finale Projektarbeit wird alle Algorithmen in einem unified Framework vergleichen und auf verschiedenen Hardware-Plattformen evaluieren.
+	\textbf{Ausblick:}
+	Zukünftige Arbeiten sollten sich auf Multi-Class-Klassifikation (Angriffstyp-Erkennung), Ensemble-Methoden und Transfer Learning auf neue Datensätze fokussieren. Besonders vielversprechend ist die Kombination von LinearSVC (für schnelle Filterung) mit komplexeren Modellen (für Nachverifikation) in einem Hybrid-Deployment.
+	Die hier erzielten Ergebnisse demonstrieren, dass klassische Machine-Learning-Methoden wie SVM bei sorgfältigem Feature Engineering und Hyperparameter-Tuning State-of-the-Art Performanz für IDS-Anwendungen erreichen können, ohne die Komplexität von Deep Learning.
+	
+	
+	\clearpage % - bei Bedarf diesen Seitenumbruch entfernen
+	
+	%
+	% Literatur 
+	%
+	
+	\phantomsection
+	\addcontentsline{toc}{section}{Literatur}
+	\bibliographystyle{unsrt}
+	\bibliography{quellen}
+	
+\end{document}
