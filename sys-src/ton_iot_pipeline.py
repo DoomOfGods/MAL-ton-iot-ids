@@ -425,8 +425,26 @@ def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation")
     if inference_monitor:
         inference_monitor.start()
     
+    # CPU sampling in background
+    stop_sampling = threading.Event()
+    sampling_thread = None
+    if inference_monitor:
+        sampling_thread = threading.Thread(
+            target=sample_cpu_periodically, 
+            args=(inference_monitor, stop_sampling, 2),
+            daemon=True
+        )
+        sampling_thread.start()
+
+    
     y_pred = model.predict(X_val)
     
+    # Stop sampling
+    if sampling_thread:
+        stop_sampling.set()
+        sampling_thread.join(timeout=1)
+
+    # Stop monitoring
     inference_stats = None
     if inference_monitor:
         inference_stats = inference_monitor.stop()

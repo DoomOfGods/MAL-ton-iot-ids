@@ -211,3 +211,11 @@ sys-src/data
 sys-src/inference_results
 sys-src/model
 sys-src/pipeline
+sys-doc/anhang.aux
+sys-doc/projektarbeit.aux
+.gitignore
+sys-doc/projektarbeit.bbl
+sys-doc/projektarbeit.blg
+sys-doc/projektarbeit.out
+sys-doc/projektarbeit.synctex.gz
+sys-doc/projektarbeit.toc

@@ -3,6 +3,7 @@ ton_iot_utils.py
 Utility classes and functions for TON-IOT anomaly detection pipeline
 """
 
+import os
 import numpy as np
 import pandas as pd
 import time
@@ -22,16 +23,35 @@ from pathlib import Path
 class ResourceMonitor:
     """Monitor CPU, Memory, and Energy consumption during training"""
     
-    def __init__(self, label="Process"):
+    def __init__(self, label="Process", cpu_sample_interval=0.5):
         self.label = label
         self.cpu_samples = []
+
+    def process_memory(self):
+        """Return current total process memory in bytes"""
+        process = psutil.Process(os.getpid())
+        return process.memory_info().rss
+    
+    def sample_cpu(self):
+        """Sample current CPU usage"""
+        cpu_percent = psutil.cpu_percent(interval=None)
+        self.cpu_samples.append(cpu_percent)
+        return cpu_percent
         
     def start(self):
         """Start monitoring resources"""
+        # Python memory
         tracemalloc.start()
-        self.start_memory = tracemalloc.get_traced_memory()[0]
+        self.start_memory_python, _ = tracemalloc.get_traced_memory()
+
+        # Total process memory
+        self.start_memory_process = self.process_memory()
+
+        # Time
         self.start_wall_time = time.time()
         self.start_process_time = time.process_time()
+
+        # Energy
         self.emissions_tracker = EmissionsTracker(
             project_name="TON-IOT-SVM",
             measure_power_secs=1,
@@ -39,36 +59,41 @@ class ResourceMonitor:
             log_level='error'
         )
         self.emissions_tracker.start()
+
+        # CPU
         psutil.cpu_percent(interval=None)
         
         print(f"Resource monitoring started for: {self.label}")
         
-    def sample_cpu(self):
-        """Sample current CPU usage"""
-        cpu_percent = psutil.cpu_percent(interval=None)
-        self.cpu_samples.append(cpu_percent)
-        return cpu_percent
-        
     def stop(self):
         """Stop monitoring and return statistics"""
-        if self.emissions_tracker:
-            emissions = self.emissions_tracker.stop()
-        else:
-            emissions = 0
+        # Stop energy
+        emissions = self.emissions_tracker.stop() if self.emissions_tracker else 0
         
+        # Time
         wall_time = time.time() - self.start_wall_time
         process_time = time.process_time() - self.start_process_time
-        _, peak_memory = tracemalloc.get_traced_memory()
+
+        # Memory
+        end_memory_python, peak_memory_python = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        
-        peak_memory_mb = peak_memory / (1024 * 1024)
+        total_python_memory = end_memory_python - self.start_memory_python
+
+        end_memory_process = self.process_memory()
+        total_process_memory = end_memory_process - self.start_memory_process
+        peak_process_memory = max(self.start_memory_process, end_memory_process)
+
+        # CPU
         avg_cpu = np.mean(self.cpu_samples) if self.cpu_samples else 0
         max_cpu = np.max(self.cpu_samples) if self.cpu_samples else 0
         
         stats = {
             'wall_time': wall_time,
             'process_time': process_time,
-            'peak_memory_mb': peak_memory_mb,
+            'python_peak_memory_mb': peak_memory_python / (1024*1024),
+            'python_total_memory_mb': total_python_memory / (1024*1024),
+            'process_peak_memory_mb': peak_process_memory / (1024*1024),
+            'process_total_memory_mb': total_process_memory / (1024*1024),
             'avg_cpu_percent': avg_cpu,
             'max_cpu_percent': max_cpu,
             'cpu_samples': len(self.cpu_samples),
@@ -90,8 +115,12 @@ class ResourceMonitor:
         print(f"  Wall time:     {stats['wall_time']:.2f} seconds")
         print(f"  Process time:  {stats['process_time']:.2f} seconds (isolated CPU time)")
         print(f"  I/O wait:      {stats['wall_time'] - stats['process_time']:.2f} seconds")
-        print(f"\nMemory:")
-        print(f"  Peak:  {stats['peak_memory_mb']:.2f} MB")
+        print(f"\nMemory (Python objects):")
+        print(f"  Peak:  {stats['python_peak_memory_mb']:.2f} MB")
+        print(f"  Total increase:  {stats['python_total_memory_mb']:.2f} MB")
+        print(f"\nMemory (Total process):")
+        print(f"  Peak:  {stats['process_peak_memory_mb']:.2f} MB")
+        print(f"  Total increase:  {stats['process_total_memory_mb']:.2f} MB")
         print(f"\nCPU:")
         print(f"  Average: {stats['avg_cpu_percent']:.1f}%")
         print(f"  Peak:    {stats['max_cpu_percent']:.1f}%")
@@ -307,7 +336,10 @@ def save_inference_results(
                 'per_sample_ms': round(inference_stats['wall_time'] / test_size * 1000, 6)
             },
             'memory': {
-                'peak_mb': round(inference_stats['peak_memory_mb'], 2)
+                'python_peak_mb': round(inference_stats['python_peak_memory_mb'], 2),
+                'python_total_mb': round(inference_stats['python_total_memory_mb'], 2),
+                'process_peak_mb': round(inference_stats['process_peak_memory_mb'], 2),
+                'process_total_mb': round(inference_stats['process_total_memory_mb'], 2),
             },
             'cpu': {
                 'average_percent': round(inference_stats['avg_cpu_percent'], 2),
@@ -318,7 +350,7 @@ def save_inference_results(
                 'co2_kg': inference_stats['co2_kg']
             }
         }
-    
+
     # Add config if provided
     if config:
         results['config'] = config
@@ -379,9 +411,12 @@ def load_and_compare_results(result_files):
         if 'performance' in result:
             row['Inference_Time_s'] = result['performance']['timing']['wall_time_seconds']
             row['Throughput_samples/s'] = result['performance']['timing']['throughput_samples_per_second']
-            row['Peak_Memory_MB'] = result['performance']['memory']['peak_mb']
+            row['Python_Peak_Memory_MB'] = result['performance']['memory']['python_peak_mb']
+            row['Python_Total_Memory_MB'] = result['performance']['memory']['python_total_mb']
+            row['Process_Peak_Memory_MB'] = result['performance']['memory']['process_peak_mb']
+            row['Process_Total_Memory_MB'] = result['performance']['memory']['process_total_mb']
             row['Energy_kWh'] = result['performance']['energy']['consumption_kwh']
-        
+    
         data.append(row)
 
     return pd.DataFrame(data)
@@ -403,7 +438,7 @@ def print_comparison_summary(comparison_df):
     
     if 'Inference_Time_s' in comparison_df.columns:
         print("\n## Efficiency Metrics ##")
-        print(comparison_df[['Model', 'Inference_Time_s', 'Throughput_samples/s', 'Peak_Memory_MB']].to_string(index=False))
+        print(comparison_df[['Model', 'Inference_Time_s', 'Throughput_samples/s', 'Process_Peak_Memory_MB', 'Energy_kWh']].to_string(index=False))
     
     print("\n" + "="*100)
     
