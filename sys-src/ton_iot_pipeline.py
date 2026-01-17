@@ -3,13 +3,14 @@ ton_iot_pipeline.py
 Pipeline functions for data loading, preprocessing, training, and evaluation
 """
 
+import numpy as np
 import pandas as pd
 import optuna
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.preprocessing import RobustScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.svm import SVC, LinearSVC
+from sklearn.svm import SVC, LinearSVC, OneClassSVM
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import (classification_report, confusion_matrix, f1_score, 
                              precision_score, recall_score, accuracy_score, fbeta_score, make_scorer)
@@ -183,6 +184,7 @@ def train_svm(X_train, y_train, mode='linearsvc', monitor=True, n_trials=200, ti
             - 'svc': SVC with RBF kernel
             - 'linearsvc': LinearSVC
             - 'sgd': SGDClassifier
+            - 'ocsvm': OneClassSVM (unsupervised)
         monitor: Enable resource monitoring
         n_trials: Number of Optuna trials (default: 200, timeout will stop early if needed)
         timeout: Timeout in seconds for Optuna optimization (default: 3600 = 1 hour)
@@ -370,9 +372,89 @@ def train_svm(X_train, y_train, mode='linearsvc', monitor=True, n_trials=200, ti
             n_jobs=-1
         )
         best_model.fit(X_train, y_train)
+
+    elif mode == 'ocsvm':
+        print("\n Mode: OneClassSVM with Optuna (Novelty Detection)")
+        print("   - Unsupervised anomaly detection")
+        print("   - Trains ONLY on normal data (y==0)")
+        print("   - Learns boundary of normal behavior")
+        print(f"   - Optuna optimization: {n_trials} trials, custom validation")
+        print("   - Intelligent hyperparameter search (TPE sampler)")
+        
+        # Filter only normal data for training
+        normal_mask = (y_train == 0)
+        X_train_normal = X_train[normal_mask]
+        
+        print(f"\n   Using {len(X_train_normal):,} normal samples (filtered from {len(X_train):,} total)")
+        print(f"   Attack ratio in full training set: {(~normal_mask).sum() / len(y_train) * 100:.1f}%")
+        
+        def objective(trial):
+            nu = trial.suggest_float('nu', 0.01, 0.3)  # Expected fraction of outliers
+            gamma = trial.suggest_categorical('gamma', ['scale', 'auto'])
+            
+            model = OneClassSVM(
+                nu=nu,
+                gamma=gamma,
+                kernel='rbf',
+            )
+            
+            # Custom validation strategy:
+            # Split normal data into train/val, add some attacks to validation
+            n_val = min(5000, int(len(X_train_normal) * 0.2))
+            indices = np.random.RandomState(42).permutation(len(X_train_normal))
+            
+            train_idx = indices[n_val:]
+            val_idx = indices[:n_val]
+            
+            X_train_cv = X_train_normal[train_idx]
+            X_val_normal = X_train_normal[val_idx]
+            
+            # Add attack samples to validation (simulate real scenario)
+            X_train_attacks = X_train[~normal_mask]
+            n_attacks_val = min(len(X_val_normal), len(X_train_attacks))
+            attack_idx = np.random.RandomState(42).choice(len(X_train_attacks), n_attacks_val, replace=False)
+            X_val_attacks = X_train_attacks[attack_idx]
+            
+            # Combine for validation
+            X_val_mixed = np.vstack([X_val_normal, X_val_attacks])
+            y_val_mixed = np.hstack([np.zeros(len(X_val_normal)), np.ones(len(X_val_attacks))])
+            
+            # Train on normal data only
+            model.fit(X_train_cv)
+            
+            # Predict on mixed validation set
+            y_pred_raw = model.predict(X_val_mixed)
+            # Convert: -1 (anomaly) → 1 (attack), +1 (normal) → 0 (normal)
+            y_pred = (y_pred_raw == -1).astype(int)
+            
+            # Calculate F2-score
+            f2 = fbeta_score(y_val_mixed, y_pred, beta=2, zero_division=0)
+            return f2
+        
+        optuna.logging.set_verbosity(optuna.logging.WARNING)
+        
+        print(f"\n Starting Optuna optimization...")
+        print(f"   Note: Each trial trains on normal data, validates on mixed data")
+        study = optuna.create_study(direction='maximize', sampler=optuna.samplers.TPESampler(seed=42))
+        study.optimize(objective, n_trials=n_trials, timeout=timeout, show_progress_bar=False)
+        
+        best_params = study.best_params
+        best_score = study.best_value
+        
+        print(f"\n   Completed {len(study.trials)} trials")
+        
+        # Train final model on ALL normal data
+        best_model = OneClassSVM(
+            nu=best_params['nu'],
+            gamma=best_params['gamma'],
+            kernel='rbf',
+        )
+        best_model.fit(X_train_normal)
+        
+        print(f"   Final model trained on {len(X_train_normal):,} normal samples")
         
     else:
-        raise ValueError(f"Unknown mode: {mode}. Choose from: 'svc_simple', 'linearsvc', 'sgd'")
+        raise ValueError(f"Unknown mode: {mode}. Choose from: 'svc_simple', 'linearsvc', 'sgd', 'ocsvm")
     
     # Stop sampling
     if sampling_thread:
@@ -419,6 +501,12 @@ def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation")
     print("\n" + "="*70)
     print(f"EVALUATION ON {dataset_name.upper()} SET")
     print("="*70)
+
+    # Check if OneClassSVM
+    is_one_class = isinstance(model, OneClassSVM)
+    if is_one_class:
+        print("\n Model type: OneClassSVM (unsupervised)")
+        print("   Predictions: +1 (normal) → 0, -1 (anomaly) → 1")
     
     # Monitor inference
     inference_monitor = ResourceMonitor(f"{dataset_name} Inference") if monitor else None
@@ -437,7 +525,15 @@ def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation")
         sampling_thread.start()
 
     
-    y_pred = model.predict(X_val)
+    y_pred_raw = model.predict(X_val)
+    
+    # Convert predictions for OneClassSVM
+    if is_one_class:
+        # OneClassSVM returns: +1 (normal), -1 (anomaly)
+        # Convert to: 0 (normal), 1 (attack)
+        y_pred = (y_pred_raw == -1).astype(int)
+    else:
+        y_pred = y_pred_raw
     
     # Stop sampling
     if sampling_thread:
