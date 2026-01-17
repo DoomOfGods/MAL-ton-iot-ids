@@ -401,7 +401,6 @@ def load_and_compare_results(result_files):
             'F2': result['metrics']['f2_score'],
             'Precision': result['metrics']['precision'],
             'Recall': result['metrics']['recall'],
-            'Detection_Rate_%': result['security_analysis']['detection_rate_percent'],
             'Missed_Attacks': result['security_analysis']['missed_attacks'],
             'False_Alarms': result['security_analysis']['false_alarms'],
             'Timestamp': result['metadata']['evaluation_timestamp']
@@ -432,7 +431,7 @@ def print_comparison_summary(comparison_df):
     comparison_df = comparison_df.sort_values('F2', ascending=False)
     
     print("\n## Performance Metrics ##")
-    print(comparison_df[['Model', 'Accuracy', 'F1', 'F2', 'Precision', 'Recall', 'Detection_Rate_%']].to_string(index=False))
+    print(comparison_df[['Model', 'Accuracy', 'F1', 'F2', 'Precision', 'Recall']].to_string(index=False))
     
     print("\n## Security Analysis ##")
     print(comparison_df[['Model', 'Missed_Attacks', 'False_Alarms']].to_string(index=False))
@@ -447,6 +446,6 @@ def print_comparison_summary(comparison_df):
     best_model = comparison_df.iloc[0]
     print(f"\nBEST MODEL (by F2-Score): {best_model['Model']}")
     print(f"  F2-Score: {best_model['F2']:.4f}")
-    print(f"  Detection Rate: {best_model['Detection_Rate_%']:.2f}%")
+    print(f"  Recall: {best_model['Recall']:.4f}")
     print(f"  Missed Attacks: {int(best_model['Missed_Attacks'])}")
     print("="*100 + "\n")
