@@ -415,6 +415,7 @@ def load_and_compare_results(result_files):
             row['Python_Total_Memory_MB'] = result['performance']['memory']['python_total_mb']
             row['Process_Peak_Memory_MB'] = result['performance']['memory']['process_peak_mb']
             row['Process_Total_Memory_MB'] = result['performance']['memory']['process_total_mb']
+            row['CPU_Peak'] = result['performance']['cpu']['peak_percent']
             row['Energy_kWh'] = result['performance']['energy']['consumption_kwh']
     
         data.append(row)
@@ -438,7 +439,7 @@ def print_comparison_summary(comparison_df):
     
     if 'Inference_Time_s' in comparison_df.columns:
         print("\n## Efficiency Metrics ##")
-        print(comparison_df[['Model', 'Inference_Time_s', 'Throughput_samples/s', 'Process_Peak_Memory_MB', 'Energy_kWh']].to_string(index=False))
+        print(comparison_df[['Model', 'Inference_Time_s', 'Throughput_samples/s', 'Process_Peak_Memory_MB', 'CPU_Peak', 'Energy_kWh']].to_string(index=False))
     
     print("\n" + "="*100)
     
