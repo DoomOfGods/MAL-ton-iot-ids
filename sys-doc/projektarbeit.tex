@@ -93,6 +93,8 @@
 \usepackage{enumerate}			% Formatierung nummerierter Listen
 \usepackage{booktabs}
 \usepackage{multirow}
+\usepackage{csquotes}
+\usepackage{placeins}
 
 % 
 % Persoenliche Angaben
@@ -158,7 +160,7 @@
 		\item \textbf{Ressourceneffizienz:} Messung von Inferenzzeit, Speicherverbrauch und Energieverbrauch
 		\item \textbf{Praktikabilität:} Bewertung der Eignung für verschiedene Deployment-Szenarien (leistungsstarke Server vs. ressourcenbeschränkte Edge-Geräte)
 	\end{enumerate}
-	Der vorliegende Bericht fokussiert auf SVM-basierte Ansätze (SVC, LinearSVC, SGDClassifier) auf dem TON-IOT-Datensatz. Die Ergebnisse werden später mit den von Projektpartnern untersuchten Isolation Forest und Boosting-Verfahren zu einem Gesamtvergleich zusammengeführt.
+	Behandelt werden SVM-basierte Ansätze (SVC, LinearSVC, SGDClassifier, OneClassSVM), Isolation Forest, sowie Boosting-Verfahren auf dem TON-IOT-Network Datensatz.
 	\subsection{Aufbau der Arbeit}
 	Die Arbeit ist wie folgt strukturiert: Kapitel~\ref{sec:related} gibt einen Überblick über verwandte Arbeiten und den Stand der Forschung. Kapitel~\ref{sec:dataset} beschreibt den verwendeten TON-IOT-Datensatz und die Preprocessing-Schritte. Die methodischen Grundlagen und experimentellen Ansätze werden in Kapitel~\ref{sec:methodology} erläutert. Kapitel~\ref{sec:results} präsentiert die experimentellen Ergebnisse, gefolgt von einer kritischen Diskussion in Kapitel~\ref{sec:discussion}. Kapitel~\ref{sec:conclusion} fasst die Erkenntnisse zusammen und gibt einen Ausblick auf zukünftige Arbeiten.
 	
@@ -168,19 +170,22 @@
 	\section{Related Work und Theoretische Grundlagen}
 	\label{sec:related}
 	\subsection{Intrusion Detection und Machine Learning}
-	Intrusion Detection Systeme lassen sich grundsätzlich in signaturbasierte und anomaliebasierte Ansätze unterteilen. Während signaturbasierte Systeme bekannte Angriffsmuster erkennen, identifizieren anomaliebasierte Systeme Abweichungen vom normalen Netzwerkverhalten. Machine-Learning-Verfahren haben sich als vielversprechend für die Anomalieerkennung erwiesen, da sie in der Lage sind, komplexe Muster in hochdimensionalen Daten zu erkennen~\cite{rabbani2024}.
+	Intrusion Detection Systeme lassen sich grundsätzlich in signaturbasierte und anomaliebasierte Ansätze unterteilen. Während signaturbasierte Systeme bekannte Angriffsmuster erkennen, identifizieren anomaliebasierte Systeme Abweichungen vom normalen Netzwerkverhalten. Machine-Learning-Verfahren haben sich als vielversprechend für die Anomalieerkennung erwiesen, da sie in der Lage sind, komplexe Muster in hochdimensionalen Daten zu erkennen~\cite{li2024}.
 	\subsection{Der TON-IOT-Datensatz}
-	Der TON-IOT-Datensatz~\cite{moustafa2021} ist ein umfangreicher Benchmark für IDS-Algorithmen, der sowohl normale Netzwerkaktivitäten als auch verschiedene Angriffstypen enthält. Im Gegensatz zu älteren Datensätzen wie KDD Cup 99 oder NSL-KDD enthält TON-IOT moderne IoT-spezifische Angriffsszenarien und ist durch seine Größe und Diversität besonders für das Training komplexer ML-Modelle geeignet.
-	Der Datensatz umfasst 42 Features, die aus Netzwerk-Traffic extrahiert wurden, darunter:
-	\begin{itemize}
-		\item \textbf{Verbindungsinformationen:} Source/Destination IP, Ports, Protokoll
-		\item \textbf{Zeitliche Merkmale:} Verbindungsdauer, Paketintervalle
-		\item \textbf{Statistiken:} Anzahl Bytes/Pakete, Flag-Zustände
-		\item \textbf{Protokoll-spezifische Features:} DNS, HTTP, SSL-Attribute
-	\end{itemize}
-	Eine besondere Herausforderung ist die starke Unbalanciertheit: Ca. 76\% der Samples sind als Angriffe gekennzeichnet, wobei jedoch verschiedene Angriffstypen sehr unterschiedlich häufig vorkommen.
+	Der TON-IOT-Datensatz enthält sowohl normale Netzwerkaktivitäten als auch verschiedene Angriffstypen. Im Gegensatz zu älteren Datensätzen wie KDD99 oder NSL-KDD enthält TON-IOT moderne IoT-spezifische Angriffsszenarien und ist durch seine Größe und Diversität besonders für das Training komplexer ML-Modelle geeignet~\cite{moustafa2021}.
+	\subsection{Evaluationsmetriken für Sicherheitsanwendungen}
+	Für IDS-Systeme sind spezialisierte Evaluationsmetriken erforderlich, die die unterschiedliche Kritikalität von Fehlern berücksichtigen:
+	\begin{equation}
+		\text{F}\_\beta\text{-Score} = (1 + \beta^2) \cdot \frac{\text{Precision} \cdot \text{Recall}}{\beta^2 \cdot \text{Precision} + \text{Recall}}
+	\end{equation}
+	Der F2-Score $(\beta = 2)$ gewichtet Recall doppelt so stark wie Precision und ist daher für Sicherheitsanwendungen besonders geeignet, da False Negatives erheblich schwerwiegender sind als False Positives.
+	
+	\subsection{Benchmarks auf TON-IOT}
+	Uddin et al.~\cite{uddin2024} präsentierten einen umfassenden Benchmark verschiedener \linebreak ML-Algorithmen auf TON-IOT, darunter Random Forest, Isolation Forest, One-Class SVM und usfAD. 
+	Zahoor et al.~\cite{zahoor2025} untersuchten ebenfalls Isolation Forest und One-Class-SVM auf TON-IOT, sowie auf weiteren Datensätzen.
+	
 	\subsection{Support Vector Machines für IDS}
-	Support Vector Machines (SVM) haben sich als effektive Methode für binäre Klassifikationsprobleme etabliert. Das grundlegende Prinzip besteht darin, eine optimale Hyperebene zu finden, die die Klassen im Featureraum trennt~\cite{belarbi2025}. Für nicht-linear separierbare Probleme können Kernel-Funktionen verwendet werden, um die Daten in einen höherdimensionalen Raum zu transformieren.
+	Support Vector Machines (SVM) haben sich als effektive Methode für binäre Klassifikationsprobleme etabliert. Das grundlegende Prinzip besteht darin, eine optimale Hyperebene zu finden, die die Klassen im Featureraum trennt~\cite{evgeniou2001}. Für nicht-linear separierbare Probleme können Kernel-Funktionen verwendet werden, um die Daten in einen höherdimensionalen Raum zu transformieren.
 	Für IDS-Anwendungen sind besonders folgende SVM-Varianten relevant:
 	\begin{itemize}
 		\item \textbf{SVC (Support Vector Classifier):} Klassische SVM-Implementierung mit verschiedenen Kernel-Optionen (linear, polynomial, RBF). Bietet hohe Flexibilität, skaliert aber schlecht mit der Datensatzgröße 
@@ -189,18 +194,10 @@
 		\item \textbf{LinearSVC:} Optimiert für lineare Kernel, verwendet eine effizientere Optimierungsmethode (liblinear). Skaliert besser auf große Datensätze ($O(n)$), aber eingeschränkt auf lineare Entscheidungsgrenzen.
 		
 		\item \textbf{SGDClassifier:} Implementiert Stochastic Gradient Descent für lineare SVM. Besonders effizient für sehr große Datensätze, benötigt aber sorgfältige Hyperparameter-Tuning.
+		
+		\item \textbf{OneClassSVM:} Spezialisierte SVM-Variante für unüberwachtes Lernen, die ausschließlich mit Daten einer Klasse (typischerweise Normalverkehr) trainiert wird. Ziel ist es, eine Entscheidungsgrenze im Featureraum zu erlernen, die den Großteil der normalen Beobachtungen einschließt, während Abweichungen davon als Anomalien erkannt werden.
+		
 	\end{itemize}
-	
-	\subsection{Evaluationsmetriken für Sicherheitsanwendungen}
-	Für IDS-Systeme sind spezialisierte Evaluationsmetriken erforderlich, die die unterschiedliche Kritikalität von Fehlern berücksichtigen:
-	\begin{equation}
-		\text{F}\_\beta\text{-Score} = (1 + \beta^2) \cdot \frac{\text{Precision} \cdot \text{Recall}}{\beta^2 \cdot \text{Precision} + \text{Recall}}
-	\end{equation}
-	Der F2-Score $(\beta = 2)$ gewichtet Recall doppelt so stark wie Precision und ist daher für Sicherheitsanwendungen besonders geeignet, da verpasste Angriffe (False Negatives) schwerwiegender sind als Fehlalarme (False Positives)~\cite{uddin2024}.
-	
-	\subsection{Benchmarks auf TON-IOT}
-	Uddin et al.~\cite{uddin2024} präsentierten einen umfassenden Benchmark verschiedener ML-Algorithmen auf TON-IOT, darunter Random Forest, Isolation Forest und usfAD. Besonders auffällig waren die schwachen F1-Scores von Isolation Forest-Methoden, was auf die Unbalanciertheit und Komplexität des Datensatzes zurückgeführt wurde.
-	Belarbi et al.~\cite{belarbi2025} untersuchten die Übertragbarkeit von IDS-Modellen auf neue Datensätze und betonten die Bedeutung von Feature Engineering und domänenspezifischem Preprocessing. Ihre Arbeit zeigt, dass generische ML-Ansätze ohne Anpassung oft suboptimale Ergebnisse liefern.
 	
 	%
 	% Kapitel 3: Datensatz und Preprocessing
@@ -208,63 +205,66 @@
 	\section{Datensatz und Preprocessing}
 	\label{sec:dataset}
 	\subsection{TON-IOT Network Dataset}
-	Für diese Arbeit wurde der \textit{Train-Test Network} Teil des TON-IOT-Datensatzes verwendet, der 211.043 Samples mit 42 Features und 2 Labels (binär: normal/attack, kategorial: Angriffstyp) enthält. Die Daten wurden von Moustafa~\cite{moustafa2021} in einer kontrollierten Testumgebung mit realistischen IoT-Geräten und simulierten Angriffsszenarien erhoben.
+	Für diese Arbeit wurde der \textit{Train-Test Network} Teil des TON-IOT-Datensatzes verwendet. Die Daten wurden von Moustafa~\cite{moustafa2021} in einer kontrollierten Testumgebung mit realistischen IoT-Geräten und simulierten Angriffsszenarien erhoben. Der Datensatz umfasst 42 Features, die aus Netzwerk-Traffic extrahiert wurden, darunter:
+	\begin{itemize}
+		\item \textbf{Verbindungsinformationen:} Source/Destination IP, Ports, Protokoll
+		\item \textbf{Zeitliche Merkmale:} Verbindungsdauer, Paketintervalle
+		\item \textbf{Statistiken:} Anzahl Bytes/Pakete, Flag-Zustände
+		\item \textbf{Protokoll-spezifische Features:} DNS, HTTP, SSL-Attribute
+	\end{itemize}
+	Auffällig ist die starke Unbalanciertheit: Ca. 76\% der 211.043 Samples sind als Angriffe gekennzeichnet. Dies entspricht nicht der Realität, in der Angriffe die Ausnahme des  Netzwerk-Traffics darstellen. Außerdem enthält der Datensatz ein binäres Label, das zwischen Angriff und normalem Verhalten unterscheidet, sowie ein kategoriales Label, welches den Angriffstypen enthält. 
 	\subsection{Datenaufteilung}
 	Die Aufteilung des Datensatzes erfolgte stratifiziert nach Angriffstyp, um eine repräsentative Verteilung in allen Teilmengen zu gewährleisten:
 	\begin{itemize}
 		\item \textbf{Training Set:} 70\% (147.730 Samples) -- Für Modell-Training
-		\item \textbf{Validation Set:} 15\% (31.656 Samples) -- Für Hyperparameter-Tuning und Modellauswahl
-		\item \textbf{Test Set:} 15\% (31.657 Samples) -- Wird bis zur finalen Evaluation nicht verwendet
+		\item \textbf{Validation Set:} 15\% (31.656 Samples) -- Für Hyperparameter-Tuning und Evaluation während der Entwicklung
+		\item \textbf{Test Set:} 15\% (31.657 Samples) -- Wird ausschließlich zur finalen Evaluation verwendet
 	\end{itemize}
-	Die stratifizierte Aufteilung stellt sicher, dass alle drei Sets die gleiche Verteilung von Angriffstypen aufweisen (ca. 76.31\% Angriffe). Dies ist wichtig, um realistische Evaluationsergebnisse zu erhalten.
+	Die stratifizierte Aufteilung stellt sicher, dass alle drei Sets die gleiche Verteilung von Angriffstypen aufweisen. Dies ist wichtig, um alle gegebenen Angriffstypen zuverlässig erfassen zu können.
 	\subsection{Feature Engineering und Preprocessing}
 	Das Preprocessing wurde in einer scikit-learn Pipeline implementiert und umfasst folgende Schritte:
 	\subsubsection{Feature Elimination}
 	IP-Adressen und Ports wurden entfernt, um die Generalisierungsfähigkeit zu verbessern. Diese Features sind hochspezifisch für die Testumgebung und würden in realen Szenarien zu Overfitting führen. Ein Modell sollte Angriffsmuster anhand des Verhaltens erkennen, nicht anhand spezifischer IP-Adressen.
-	\begin{lstlisting}[caption={Feature Elimination}, label={lst:elimination}]
-		class FeatureEliminator(BaseEstimator, TransformerMixin):
-		def init(self, features\_to\_drop):
-		self.features\_to\_drop = features\_to\_drop
-		def transform(self, X):
-		return X.drop(columns=self.features\_to\_drop)
-	\end{lstlisting}
 	\subsubsection{Context-Aware Imputation}
 	Fehlende Werte wurden kontextabhängig behandelt:
 	\begin{itemize}
-		\item \textbf{Kategoriale Features:} Fehlende Werte werden mit \texttt{"-"} gefüllt (repräsentiert "nicht verfügbar")
-		\item \textbf{DNS-spezifisch:} \texttt{dns\_rcode} wird auf \texttt{"-"} gesetzt, wenn \texttt{service} $\neq$ \texttt{"dns"}
-		\item \textbf{Kontinuierliche Features:} \texttt{"-"} wird durch 0 ersetzt und numerisch konvertiert
+		\item \textbf{Kategoriale Features:} Fehlende Werte werden mit \texttt{-} gefüllt (repräsentiert "nicht verfügbar")
+		\item \textbf{DNS-spezifisch:} \texttt{dns\_rcode} wird auf \texttt{-} gesetzt, wenn \texttt{service} $\neq$ \texttt{"dns"}
+		\item \textbf{Kontinuierliche Features:} \texttt{-} wird durch 0 ersetzt und numerisch konvertiert
 	\end{itemize}
-	
-	Diese domänenspezifische Imputation ist wichtiger als generische Methoden (z.B. Mean-Imputation), da Fehlwerte oft semantische Bedeutung haben (z.B. "DNS-Feature nicht anwendbar, weil kein DNS-Protokoll").
+	Ein \texttt{dns\_rcode} Eintrag von 0 ist ansonsten mehrdeutig und kann sowohl für den Resultcode 0 (NOERROR) stehen, aber auch dafür, dass kein DNS Resultcode existiert. Diese domänenspezifische Imputation wird genutzt, da Fehlwerte semantische Bedeutung haben, die durch generische Methoden (wie z.B. Mean-Imputation) verloren gehen.
 	\subsubsection{Skalierung und Encoding}
 	Die Feature-Transformation erfolgt mittels \texttt{ColumnTransformer} mit drei Komponenten:
 	\begin{enumerate}
 		\item \textbf{RobustScaler} für kontinuierliche Features (11 Features): Robuster gegen Outliers als StandardScaler, da Median und IQR statt Mean/Std verwendet werden.
 		\item \textbf{OneHotEncoder} für kategoriale Features mit wenigen Ausprägungen (14 Features): Erstellt binäre Dummy-Variablen, wobei die erste Kategorie gedroppt wird (\texttt{drop='first'}), um Multikollinearität zu vermeiden.
-		
-		\item \textbf{Binary Presence Encoder} für hochkardinalere Features (13 Features): Statt One-Hot-Encoding (würde zu Dimensionsexplosion führen) wird binär kodiert: 0 wenn fehlend/leer, 1 wenn vorhanden. Dies reduziert die Feature-Anzahl drastisch bei minimalem Informationsverlust.
+		\item \textbf{Binary Presence Encoder} für hochkardinalere Features (13 Features): Statt One-Hot-Encoding (würde zu Dimensionsexplosion führen) wird binär kodiert: 0 wenn fehlend/leer, 1 wenn vorhanden. Dies reduziert die Feature-Anzahl drastisch bei minimalem Informationsverlust. Da es sich hier außerdem um Features mit hoher Sparsity handelt, dient die binäre Kodierung außerdem dazu, das Risiko von Overfitting zu verringern.
 	\end{enumerate}
-	Nach dem Preprocessing resultieren 79 Features aus ursprünglich 42, wobei 4 Features (IPs, Ports) entfernt wurden.
+	Nach dem Preprocessing resultieren 79 Features aus ursprünglich 42, wobei 4 Features entfernt wurden.
 	\subsection{Label-Verteilung}
-	Die Label-Verteilung zeigt eine klare Dominanz von Angriffen (76.31\%), was für IDS-Datensätze unüblich ist (üblicherweise dominiert normaler Traffic). Innerhalb der Angriffe gibt es jedoch eine starke Unbalanciertheit zwischen verschiedenen Angriffstypen. Tabelle~\ref{tab:label-dist} zeigt die Verteilung der Top-5 Angriffstypen im Training Set.
+	Die Label-Verteilung zeigt eine Dominanz von Angriffen gegenüber normalem Netzwerkverkehr (76{,}31\,\%). Im Gegensatz zu vielen realen Netzwerkszenarien ist die Verteilung der einzelnen Angriffstypen innerhalb der Angriffsklasse weitgehend ausgeglichen, sodass keine einzelne Angriffskategorie deutlich dominiert. Eine Ausnahme bildet lediglich der \textit{mitm}-Angriffstyp, der nur einen sehr geringen Anteil aufweist. Tabelle~\ref{tab:label-dist} zeigt die Verteilung der Angriffstypen im Datensatz. 
+	\FloatBarrier
 	\begin{table}[h]
 		\centering
-		\caption{Label-Verteilung im Training Set (Top-5 Angriffstypen)}
+		\caption{Label-Verteilung im Training Set}
 		\label{tab:label-dist}
 		\begin{tabular}{lrr}
 			\toprule
 			\textbf{Angriffstyp} & \textbf{Anzahl} & \textbf{Anteil (\%)} \\
 			\midrule
-			Normal   & 35.012 & 23.69 \\
-			DDoS     & 48.234 & 32.65 \\
-			Scanning & 31.892 & 21.59 \\
-			Password & 15.447 & 10.45 \\
-			XSS      & 8.921  & 6.04  \\
-			Andere   & 8.224  & 5.58  \\
+			Normal   	& 35.000 & 23.69 \\
+			DDoS     	& 14.000 & 9.48 \\
+			Scanning 	& 14.000 & 9.48 \\
+			Password 	& 14.000 & 9.48 \\
+			Ransomware	& 14.000  & 9.48  \\
+			XSS      	& 14.000  & 9.48  \\
+			Backdoor    & 14.000  & 9.48  \\
+			DOS		    & 14.000  & 9.48  \\
+			MITM	   	& 730  & 0.49  \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
+	\FloatBarrier
 	Diese Verteilung motiviert die Verwendung von \texttt{class\_weight='balanced'} in den SVM-Modellen und die Wahl des F2-Scores als Optimierungsmetrik.
 	%
 	% Kapitel 4: Methodik
@@ -312,7 +312,7 @@
 	
 	
 	\subsection{Hyperparameter-Optimierung}
-	Die Hyperparameter-Optimierung erfolgte mittels Optuna~\cite{optuna}, einem Bayesianischen Optimierungsframework. Optuna verwendet den Tree-structured Parzen Estimator (TPE) als Sampling-Strategie, der effizienter ist als Grid Search oder Random Search.
+	Die Hyperparameter-Optimierung erfolgte mittels Optuna~\cite{akiba2019}, einem Bayesianischen Optimierungsframework. Optuna verwendet den Tree-structured Parzen Estimator (TPE) als Sampling-Strategie, der effizienter ist als Grid Search oder Random Search.
 	\textbf{Optimierungsprozess:}
 	\begin{enumerate}
 		\item 5-fold stratifizierte Cross-Validation auf dem Training Set
