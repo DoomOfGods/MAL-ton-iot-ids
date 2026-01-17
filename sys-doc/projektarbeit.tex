@@ -95,6 +95,7 @@
 \usepackage{multirow}
 \usepackage{csquotes}
 \usepackage{placeins}
+\usepackage{makecell}
 
 % 
 % Persoenliche Angaben
@@ -272,12 +273,9 @@
 	\section{Methodik und Experimentelles Setup}
 	\label{sec:methodology}
 	\subsection{SVM-Modellvarianten}
-	Es wurden drei SVM-Varianten implementiert und verglichen:
+	Es wurden vier SVM-Varianten implementiert und verglichen:
 	\subsubsection{SVC mit RBF-Kernel}
-	Der Support Vector Classifier mit Radial Basis Function (RBF) Kernel ist die flexibelste Variante und kann nicht-lineare Entscheidungsgrenzen modellieren. Die RBF-Kernel-Funktion ist definiert als:
-	\begin{equation}
-		K(\mathbf{x}\_i, \mathbf{x}\_j) = \exp\left(-\gamma |\mathbf{x}\_i - \mathbf{x}\_j|^2\right)
-	\end{equation}
+	Der Support Vector Classifier mit Radial Basis Function (RBF) Kernel ist die flexibelste Variante und kann nicht-lineare Entscheidungsgrenzen modellieren. \\
 	Hyperparameter:
 	\begin{itemize}
 		\item $C \in [0.1, 100]$: Regularisierungsparameter (log-uniform)
@@ -286,10 +284,7 @@
 	\end{itemize}
 	
 	\subsubsection{LinearSVC}
-	LinearSVC ist auf lineare Kernel spezialisiert und verwendet die liblinear-Bibliothek, die für große Datensätze effizienter ist. Die Optimierung erfolgt über:
-	\begin{equation}
-		\min\_{\mathbf{w}, b} \frac{1}{2}|\mathbf{w}|^2 + C \sum\_{i=1}^{n} \max(0, 1 - y\_i(\mathbf{w}^T\mathbf{x}\_i + b))
-	\end{equation}
+	LinearSVC ist auf lineare Kernel spezialisiert und verwendet die liblinear-Bibliothek, die für große Datensätze effizienter ist. \\
 	Hyperparameter:
 	\begin{itemize}
 		\item $C \in [0.001, 100]$: Regularisierungsparameter (log-uniform)
@@ -298,10 +293,7 @@
 	\end{itemize}
 	
 	\subsubsection{SGDClassifier}
-	Der Stochastic Gradient Descent Classifier approximiert eine lineare SVM durch iterative Optimierung mit Mini-Batches. Dies ist besonders effizient für sehr große Datensätze:
-	\begin{equation}
-		\mathbf{w}\_{t+1} = \mathbf{w}\_t - \eta\_t \nabla L(\mathbf{w}\_t, \mathbf{x}\_i, y\_i)
-	\end{equation}
+	Der Stochastic Gradient Descent Classifier approximiert eine lineare SVM durch iterative Optimierung mit Mini-Batches. Dies ist besonders effizient für sehr große Datensätze. \\
 	Hyperparameter:
 	\begin{itemize}
 		\item $\alpha \in [10^{-5}, 0.1]$: Learning rate / Regularisierung (log-uniform)
@@ -309,10 +301,17 @@
 		\item \texttt{penalty} $\in \{\texttt{l2}, \texttt{l1}, \texttt{elasticnet}\}$: Regularisierung
 		\item \texttt{early\_stopping=True}: Stoppt Training bei Stagnation
 	\end{itemize}
-	
+	\subsubsection{One-Class SVM}
+	Die One-Class SVM (OCSVM) ist ein unüberwachter Klassifikator zur Anomalieerkennung, der nur auf normalem Netzwerkverkehr trainiert wird. Sie modelliert die Grenze des normalen Datenbereichs und klassifiziert Abweichungen als Angriffe. Dies ist besonders nützlich für Szenarien, in denen Angriffe selten oder bisher unbekannt sind. \\
+	Hyperparameter:
+	\begin{itemize}
+		\item $nu \in [0.01, 0.3]$: Erwarteter Anteil an Ausreißern im Trainingsdatensatz
+		\item $\gamma \in \{\text{scale}, \text{auto}\}$: Kernel-Koeffizient
+		\item \texttt{kernel='rbf'}: Radial Basis Function Kernel
+	\end{itemize}
 	
 	\subsection{Hyperparameter-Optimierung}
-	Die Hyperparameter-Optimierung erfolgte mittels Optuna~\cite{akiba2019}, einem Bayesianischen Optimierungsframework. Optuna verwendet den Tree-structured Parzen Estimator (TPE) als Sampling-Strategie, der effizienter ist als Grid Search oder Random Search.
+	Die Hyperparameter-Optimierung erfolgte mittels Optuna~\cite{optuna2019}, einem Bayesianischen Optimierungsframework. Optuna verwendet den Tree-structured Parzen Estimator (TPE) als Sampling-Strategie, der effizienter ist als Grid Search oder Random Search.
 	\textbf{Optimierungsprozess:}
 	\begin{enumerate}
 		\item 5-fold stratifizierte Cross-Validation auf dem Training Set
@@ -320,7 +319,7 @@
 		\item Anzahl Trials: 200 (oder Timeout nach 3600s)
 		\item Parallele Evaluation mit \texttt{n\_jobs=-1}
 	\end{enumerate}
-	Die Wahl des F2-Scores als Optimierungskriterium reflektiert die Anforderungen von Sicherheitsanwendungen: Ein verpasster Angriff (False Negative) ist kritischer als ein Fehlalarm (False Positive). Der F2-Score gewichtet Recall doppelt so stark wie Precision.
+	Die Wahl des F2-Scores als Optimierungskriterium reflektiert die Anforderungen von Sicherheitsanwendungen: Ein verpasster Angriff ist kritischer als ein Fehlalarm. Der F2-Score gewichtet Recall doppelt so stark wie Precision.
 	\subsection{Resource Monitoring}
 	Um einen umfassenden Vergleich zu ermöglichen, wurden systematisch Ressourcenverbrauchsdaten erfasst:
 	\subsubsection{Zeitmetriken}
@@ -330,9 +329,9 @@
 		\item \textbf{Throughput:} Samples pro Sekunde bei Inferenz
 	\end{itemize}
 	\subsubsection{Speicherverbrauch}
-	Mittels \texttt{tracemalloc} wurde der Peak Memory Usage gemessen. Dies ist besonders relevant für Edge-Deployment, wo Speicher limitiert ist.
+	Mittels \texttt{psutil} wurde der Peak Memory Usage gemessen. Dies ist besonders relevant für Edge-Deployment, wo Speicher limitiert ist.
 	\subsubsection{CPU-Auslastung}
-	Die CPU-Auslastung wurde während Training/Inferenz periodisch (alle 2s) gesampelt mittels \texttt{psutil}. Dies gibt Aufschluss über Parallelisierungseffizienz und System-Load.
+	Die CPU-Auslastung wurde während Training/Inferenz periodisch mittels \texttt{psutil} gesampelt. Dies gibt Aufschluss über Parallelisierungseffizienz und System-Load.
 	\subsubsection{Energieverbrauch}
 	Der Energieverbrauch wurde mittels CodeCarbon~\cite{codecarbon} geschätzt. CodeCarbon trackt CPU- und GPU-Auslastung und berechnet basierend auf TDP und Laufzeit den Energieverbrauch in kWh sowie $CO\_2$-Emissionen.
 	
@@ -347,61 +346,40 @@
 		\text{Accuracy} &= \frac{TP + TN}{TP + TN + FP + FN}
 	\end{align}
 
-	Zusätzlich wurden sicherheitsspezifische Metriken berechnet:
-	\begin{itemize}
-		\item \textbf{Detection Rate:} Anteil erkannter Angriffe (= Recall)
-		\item \textbf{Missed Attacks:} Absolute Anzahl verpasster Angriffe (= False Negatives)
-		\item \textbf{False Alarm Rate:} Anteil fälschlicherweise als Angriff klassifizierter normaler Samples
-	\end{itemize}
 	\subsection{Experimentelles Setup}
-	\textbf{Hardware:}
-	\begin{itemize}
-		\item CPU: AMD Ryzen 7 7840HS (8 Cores, 16 Threads, 4.7 GHz)
-		\item RAM: 64 GB DDR5
-		\item OS: Windows 11
-		\item Python: 3.13.7
-	\end{itemize}
-	\textbf{Software:}
-	\begin{itemize}
-		\item scikit-learn 1.6.0
-		\item optuna 4.1.0
-		\item codecarbon 2.7.3
-	\end{itemize}
-	Der Code ist verfügbar unter: \texttt{[GitHub-Link einfügen]}
+	Die Inferenzwerte der Modelle wurden auf folgenden Systemen getestet:
+	\begin{table}[h!]
+		\centering
+		\caption{Hardware- und Softwarekonfiguration der Systeme}
+		\label{tab:experiment-setup}
+			\begin{tabular}{lcc}
+			\toprule
+			\textbf{Komponente} & \textbf{System 1} & \textbf{System 2} \\
+			\midrule
+			\multicolumn{3}{l}{\textit{Hardware}} \\
+			CPU & \makecell{AMD Ryzen 7 7840HS \\ (8 Cores, 16 Threads, 4.7 GHz)} & \\
+			RAM & 64 GB DDR5 & \\
+			OS & Windows 11 & \\
+			Python & 3.13.7 & \\
+			\midrule
+			\multicolumn{3}{l}{\textit{Software}} \\
+			scikit-learn & 1.6.0 & \\
+			optuna & 4.1.0 & \\
+			codecarbon & 2.7.3 & \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
 	%
 	% Kapitel 5: Ergebnisse
 	%
 	\section{Experimentelle Ergebnisse}
 	\label{sec:results}
-	\subsection{Hyperparameter-Optimierung}
-	Die Hyperparameter-Optimierung mittels Optuna ergab folgende Best Parameters:
+	\subsection{Performanz-Metriken auf Test Set}
+	Tabelle~\ref{tab:validation-results} zeigt die detaillierten Evaluationsergebnisse auf dem Test Set (31.657 Samples):
 	\begin{table}[h]
 		\centering
-		\caption{Optimale Hyperparameter nach Optuna-Tuning}
-		\label{tab:hyperparams}
-		\begin{tabular}{llll}
-			\toprule
-			\textbf{Modell} & \textbf{Parameter} & \textbf{Wert} & \textbf{CV F2-Score} \\
-			\midrule
-			\multirow{2}{*}{SVC} & C     & 6.251 & \multirow{2}{*}{0.9847} \\
-			& gamma & scale & \\
-			\midrule
-			\multirow{2}{*}{LinearSVC} & C    & 0.873 & \multirow{2}{*}{0.9821} \\
-			& loss & squared\_hinge & \\
-			\midrule
-			\multirow{3}{*}{SGDClassifier} & alpha   & 0.00152 & \multirow{3}{*}{0.9654} \\
-			& loss    & hinge    & \\
-			& penalty & l2       & \\
-			\bottomrule
-		\end{tabular}
-	\end{table}
-	
-	Interessanterweise erreichte SVC mit RBF-Kernel den höchsten CV F2-Score, was die Vorteile nicht-linearer Entscheidungsgrenzen demonstriert. LinearSVC liegt nur knapp dahinter, während SGDClassifier ca. 2\% schlechter abschneidet.
-	\subsection{Performanz-Metriken auf Validation Set}
-	Tabelle~\ref{tab:validation-results} zeigt die detaillierten Evaluationsergebnisse auf dem Validation Set (31.656 Samples):
-	\begin{table}[h]
-		\centering
-		\caption{Performanz-Metriken auf Validation Set}
+		\caption{Performanz-Metriken auf Test Set}
 		\label{tab:validation-results}
 		\begin{tabular}{lrrrrr}
 			\toprule
@@ -410,19 +388,21 @@
 			SVC           & 0.8657 & 0.9416 & 0.7633 & 1.0000 & 0.7633 \\
 			LinearSVC     & 0.9686 & 0.9798 & 0.9505 & 0.9874 & 0.9511 \\
 			SGDClassifier & 0.6939 & 0.6717 & 0.7345 & 0.6576 & 0.5573 \\
+			OneClassSVM	  & 0.8799 & 0.8841 & 0.8730 & 0.8869 & 0.8152 \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
 	
 	\textbf{Interpretation:}
 	\begin{itemize}
-		\item \textbf{SVC:} Erreicht perfekte Recall (100\%), d.h. kein einziger Angriff wird verpasst. Der Preis dafür sind 7.492 False Positives (Fehlalarme), was zu niedriger Precision (76.33\%) führt. Dies ist ein typischer Precision-Recall-Trade-off.
-		\item \textbf{LinearSVC:} Bietet den besten Balance mit F2-Score 0.9798. Verpasst nur 304 von 24.157 Angriffen (1.26\% Miss Rate) bei deutlich weniger Fehlalarmen (1.243) als SVC. Dies ist der praktikabelste Ansatz.
-		
+		\item \textbf{SVC:} Erreicht perfekte Recall (100\%), d.h. kein einziger Angriff wird verpasst. Der Preis dafür sind 7.492 False Positives, was zu niedriger Precision (76.33\%) führt. Dies ist ein typischer Precision-Recall-Trade-off.
+		\item \textbf{LinearSVC:} Bietet den besten Balance mit F2-Score 0.9798. Verpasst nur 304 von 24.157 Angriffen (1.26\% Miss Rate) bei deutlich weniger False Positives (1.243) als SVC. Dies ist der praktikabelste Ansatz.
 		\item \textbf{SGDClassifier:} Zeigt signifikant schlechtere Performanz mit nur 65.76\% Detection Rate. Dies liegt vermutlich an suboptimaler Konvergenz trotz Hyperparameter-Tuning. SGD ist sensitiver gegenüber Hyperparametern als andere SVM-Varianten.
+		\item \textbf{OneClassSVM:} Erreicht eine ausgewogene Performanz mit F1-Score 0.8799 und F2-Score 0.8841. Die Precision (87.30\%) und Recall (88.69\%) liegen relativ dicht beieinander, was auf ein ausgeglichenes Verhältnis von Fehlalarmen zu verpassten Angriffen hinweist. Im Vergleich zu den überwachten SVM-Varianten zeigt OneClassSVM eine leicht geringere Accuracy (81.52\%), was typisch für unüberwachtes Lernen ist, da das Modell nur auf Normalverkehr trainiert wurde.
+
 	\end{itemize}
 	\subsection{Confusion Matrices}
-	Tabelle~\ref{tab:confusion} zeigt die Confusion Matrices für alle drei Modelle:
+	Tabelle~\ref{tab:confusion} zeigt die Confusion Matrices für alle Modelle:
 	\begin{table}[h]
 		\centering
 		\caption{Confusion Matrices (Validation Set)}
@@ -435,6 +415,7 @@
 			SVC           & 8     & 0     & 7.492  & 24.157 \\
 			LinearSVC     & 6.257 & 304   & 1.243  & 23.853 \\
 			SGDClassifier & 1.758 & 8.271 & 5.742  & 15.886 \\
+			OneClassSVM   & 4.382 & 2.732 & 3.118  & 21.425 \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
@@ -444,81 +425,73 @@
 		\item SVC minimiert FN (0) auf Kosten von FP (7.492)
 		\item LinearSVC balanciert FN (304) und FP (1.243)
 		\item SGDClassifier hat sowohl hohe FN (8.271) als auch hohe FP (5.742)
+		 \item OneClassSVM balanciert FN (2.732) und FP (3.118).
 	\end{itemize}
 	\subsection{Ressourcenverbrauch}
-	Tabelle~\ref{tab:resources} zeigt die gemessenen Ressourcenverbrauchsdaten:
+	Tabelle~\ref{tab:resources1} zeigt die gemessenen Ressourcenverbrauchsdaten auf System 1:
+	\FloatBarrier
 	\begin{table}[h]
 		\centering
-		\caption{Ressourcenverbrauch (Training auf 147.730 Samples, Inferenz auf 31.656 Samples)}
-		\label{tab:resources}
+		\caption{Ressourcenverbrauch (Training auf 147.730 Samples, Inferenz auf 31.657 Samples) auf System 1}
+		\label{tab:resources1}
 		\begin{tabular}{lrrrrr}
 			\toprule
-			\textbf{Modell} & \textbf{Train Time} & \textbf{Inference Time} & \textbf{Throughput} & \textbf{Peak RAM} & \textbf{Energy} \\
-			& \textbf{(s)}       & \textbf{(s)}           & \textbf{(samples/s)} & \textbf{(MB)} & \textbf{(kWh)} \\
+			\textbf{Modell} & \textbf{Inference Time} & \textbf{Throughput} & \textbf{Peak RAM} & \textbf{Energy} & \textbf{Peak CPU} \\
+			& \textbf{(s)}           & \textbf{(samples/s)} & \textbf{(MB)} & \textbf{(kWh)} & \textbf{(\%)} \\
 			\midrule
-			SVC           & 1.247  & 257.81 & 123     & 0.92 & 0.0275 \\
-			LinearSVC     & 89.32  & 1.65   & 19.132  & 0.85 & 0.0034 \\
-			SGDClassifier & 12.45  & 1.68   & 18.789  & 0.85 & 0.0015 \\
+			SVC           & 260.07 & 121.72   & 439.57 & 0.0278 & 13.0 \\
+			LinearSVC     & 1.4310 & 22122.28 & 355.05 & 0.0001 & 0    \\
+			SGDClassifier & 23.775 & 1331.51  & 340.04 & 0.0020 & 0    \\
+			OneClassSVM   & 1.4434 & 21932.09 & 351.42 & 0.0001 & 13.4 \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
-	
+	\FloatBarrier
+	Tabelle~\ref{tab:resources2} zeigt die gemessenen Ressourcenverbrauchsdaten auf System 2:
+	\FloatBarrier
+	\begin{table}[h]
+		\centering
+		\caption{Ressourcenverbrauch (Training auf 147.730 Samples, Inferenz auf 31.657 Samples) auf System 2}
+		\label{tab:resources2}
+		\begin{tabular}{lrrrrr}
+	\toprule
+	\textbf{Modell} & \textbf{Inference Time} & \textbf{Throughput} & \textbf{Peak RAM} & \textbf{Energy} & \textbf{Peak CPU} \\
+	& \textbf{(s)}           & \textbf{(samples/s)} & \textbf{(MB)} & \textbf{(kWh)} & \textbf{(\%)} \\
+	\midrule
+	SVC           & - & - & - & - & - \\
+	LinearSVC     & - & - & - & - & - \\
+	SGDClassifier & - & - & - & - & - \\
+	OneClassSVM   & - & - & - & - & - \\
+	\bottomrule
+\end{tabular}
+	\end{table}
+	\FloatBarrier
 	\textbf{Interpretation:}
 	\begin{itemize}
-		\item \textbf{Training:} LinearSVC hat die längste Trainingszeit (89.32s), da Optuna 200 Trials durchführt. SVC ist trotz RBF-Kernel schneller (1.247s), da hier nur wenige Trials nötig waren bis Timeout. SGDClassifier ist am schnellsten (12.45s).
-		\item \textbf{Inferenz:} SVC ist extrem langsam (257.81s für 31.656 Samples = 123 samples/s). Dies liegt an der Komplexität der RBF-Kernel-Berechnung für alle Support Vectors. LinearSVC und SGD sind ca. 150x schneller (1.65-1.68s = 19k samples/s).
+		\item \textbf{Zeit:} SVC ist extrem langsam. Dies liegt an der Komplexität der RBF-Kernel-Berechnung für alle Support Vectors. Die anderen SVM-Modelle sind erheblich schneller.
 		
-		\item \textbf{Speicher:} Alle Modelle haben ähnlichen Peak Memory (~0.85-0.92 MB), da scikit-learn effiziente Implementierungen nutzt.
+		\item \textbf{Speicher:} SVC benötigt außerdem den meisten Arbeitsspeicher, allerdings ist der Unterschied gering, da scikit-learn effiziente Implementierungen nutzt.
 		
-		\item \textbf{Energie:} SVC verbraucht am meisten Energie (0.0275 kWh) aufgrund langer Inferenzzeit. LinearSVC (0.0034 kWh) und SGD (0.0015 kWh) sind deutlich energieeffizienter.
+		\item \textbf{Energie:} Aufgrund langer Inferenzzeit benötigt SVC ebenso am meisten Energie. Die schnellen LinearSVC und OneClassSVM Modelle sind daher weitaus energieeffizienter.
 	\end{itemize}
-	\subsection{Test Set Evaluation (SVC)}
-	Zur finalen Evaluation wurde das beste Modell (SVC basierend auf F2-Score) auf dem Test Set getestet. Tabelle~\ref{tab:test-results} zeigt die Ergebnisse:
-	\begin{table}[h]
-		\centering
-		\caption{Test Set Evaluation (SVC, 31.657 Samples)}
-		\label{tab:test-results}
-		\begin{tabular}{lrrrrr}
-			\toprule
-			\textbf{Metrik} & \textbf{Wert} & & \textbf{Confusion Matrix} & & \\
-			\midrule
-			F1-Score   & 0.8657 & & Predicted Normal & Predicted Attack & \\
-			F2-Score   & 0.9416 & & True Normal & 8 & 7.492 \\
-			Precision  & 0.7633 & & True Attack & 0 & 24.157 \\
-			Recall     & 1.0000 & & & & \\
-			Accuracy   & 0.7633 & & & & \\
-			\midrule
-			Detection Rate & 100.00\% & & & & \\
-			Missed Attacks & 0 / 24.157 & & & & \\
-			False Alarms   & 7.492 & & & & \\
-			\bottomrule
-		\end{tabular}
-	\end{table}
-	
-	Die Test-Ergebnisse bestätigen die Validation-Resultate: SVC erreicht perfekte Angriffserkennung (100\% Recall) bei moderater Precision. Dies zeigt, dass keine Overfitting-Probleme vorliegen.
+
 	%
 	% Kapitel 6: Diskussion
 	%
 	\section{Diskussion}
 	\label{sec:discussion}
 	\subsection{Vergleich der SVM-Varianten}
-	Die Experimente zeigen deutliche Trade-offs zwischen den drei SVM-Varianten:
-	\textbf{SVC mit RBF-Kernel} bietet die höchste Detektionsqualität (100\% Recall, F2-Score 0.9416) und ist damit die sicherste Option aus Sicherheitsperspektive. Kein einziger Angriff wird verpasst. Der Preis dafür sind:
-	\begin{itemize}
-		\item Hohe False Positive Rate (fast alle normalen Samples werden als Angriff klassifiziert)
-		\item Extrem langsame Inferenz (257s für 31k Samples = 155x langsamer als LinearSVC)
-		\item Höchster Energieverbrauch (0.0275 kWh)
-	\end{itemize}
-	\textbf{Eignung:} Nur für Szenarien geeignet, wo False Positives akzeptabel sind und Rechenressourcen unbegrenzt (z.B. Offline-Analyse, Cloud-Deployment mit manueller Nachverifikation).
+	Die Experimente zeigen deutliche Trade-offs zwischen den SVM-Varianten:
+	\textbf{SVC mit RBF-Kernel} bewertet nahezu jeden Netzwerkverkehr als Angriff und ist somit nicht für IDS geeignet.\\\\
 	\textbf{LinearSVC} bietet den besten Kompromiss:
 	\begin{itemize}
 		\item Sehr gute Detektionsqualität (98.74\% Recall, F2-Score 0.9798)
 		\item Nur 304 verpasste Angriffe (1.26\% Miss Rate)
 		\item Deutlich weniger Fehlalarme als SVC (1.243 vs. 7.492)
-		\item 155x schnellere Inferenz als SVC
-		\item Energieeffizient (0.0034 kWh)
+		\item 180x schnellere Inferenz als SVC
+		\item Energieeffizient (0.0001 kWh)
 	\end{itemize}
-	\textbf{Eignung:} Optimal für praktische Deployments, sowohl auf Servern als auch Edge-Geräten. Der minimale Recall-Verlust (1.26\%) ist vertretbar angesichts der massiven Effizienzgewinne.
+	\textbf{Eignung:} Optimal für praktische Deployments, sowohl auf Servern als auch Edge-Geräten.\\
 	\textbf{SGDClassifier} zeigt enttäuschende Ergebnisse:
 	\begin{itemize}
 		\item Nur 65.76\% Recall (34.24\% Miss Rate!)
@@ -527,28 +500,14 @@
 	\end{itemize}
 	\textbf{Ursachen:} SGD ist bekanntermaßen sensitiv gegenüber Hyperparametern und Datensatz-Charakteristiken. Die Unbalanciertheit und hohe Dimensionalität von TON-IOT scheinen SGD zu benachteiligen. Möglicherweise wären mehr Tuning-Trials oder adaptive Learning Rates (z.B. AdaGrad) hilfreich.
 	\subsection{Vergleich mit Literatur-Benchmarks}
-	Uddin et al.~\cite{uddin2024} berichten für ihre usfAD-Methode F1-Scores im Bereich 0.85-0.95 auf TON-IOT. Unser LinearSVC (F1: 0.9686) ist vergleichbar oder besser, bei deutlich geringerer Komplexität.
-	Belarbi et al.~\cite{belarbi2025} betonen die Wichtigkeit von Feature Engineering. Unsere domänenspezifische Imputation und Binary Presence Encoding scheinen effektiv zu sein, da wir gute Ergebnisse mit klassischen ML-Methoden erreichen.
-	Die in~\cite{uddin2024} beobachteten schwachen Isolation Forest Ergebnisse werden von unseren Projektpartnern weiter untersucht. Ein späterer Vergleich wird zeigen, ob ähnliche Probleme auftreten.
+	Uddin et al.~\cite{uddin2024} berichten für ihre usfAD-Methode F1-Scores im Bereich 0.996-0.991 auf TON-IOT. Unser LinearSVC (F1: 0.9686) ist vergleichbar bei deutlich geringerer Komplexität nur etwas schwächer.
+	Zahoor et al.~\cite{zahoor2025} berichten einen F1-Score von 0.91 für OCSVM, welcher zwischen den F1-Scores unseres OCSVM- und LinearSVC-Modellen liegt. Der F2-Score wird in den meisten Publikationen nicht berücksichtigt.
 	\subsection{Deployment-Szenarien}
-	Basierend auf den Ergebnissen lassen sich folgende Empfehlungen für verschiedene Deployment-Szenarien ableiten:
-	\textbf{Edge Computing / IoT-Geräte:}
+	Basierend auf den Ergebnissen lassen sich folgende Empfehlungen ableiten:\\
+	\textbf{LinearSVC:}
 	\begin{itemize}
-		\item \textbf{Empfohlen:} LinearSVC
 		\item Begründung: Schnelle Inferenz (19k samples/s), geringer Speicherbedarf, energieeffizient
 		\item Trade-off: 1.26\% Missed Attacks akzeptabel
-	\end{itemize}
-	\textbf{Cloud / Datacenter:}
-	\begin{itemize}
-		\item \textbf{Empfohlen:} LinearSVC oder SVC (je nach Anforderungen)
-		\item LinearSVC für hohen Durchsatz bei guter Qualität
-		\item SVC für maximale Sicherheit bei unbegrenzten Ressourcen
-	\end{itemize}
-	\textbf{Hybrid-Ansatz:}
-	\begin{itemize}
-		\item LinearSVC auf Edge für Echtzeit-Filterung
-		\item Verdächtige Samples zur Cloud für SVC-Nachverifikation
-		\item Beste Balance zwischen Latenz und Accuracy
 	\end{itemize}
 	\subsection{Limitationen und zukünftige Arbeiten}
 	\subsubsection{Limitationen}
@@ -556,7 +515,7 @@
 		\item \textbf{Datensatz-spezifisch:} Die Ergebnisse sind spezifisch für TON-IOT. Generalisierung auf andere Netzwerke oder neue Angriffstypen ist unklar.
 		\item \textbf{Simulated Environment:} TON-IOT wurde in kontrollierter Umgebung erstellt. Reale Netzwerke haben andere Charakteristiken (mehr Rauschen, variablere Angriffsformen).
 		
-		\item \textbf{Binary Classification:} Wir haben nur binär klassifiziert (normal vs. attack). Multi-Class-Klassifikation der Angriffstypen wäre informativer für Security-Teams.
+		\item \textbf{Binary Classification:} Wir haben nur binär klassifiziert (normal vs. attack). Multi-Class-Klassifikation der Angriffstypen kann für Security-Teams relevant sein.
 		
 		\item \textbf{Static Model:} Das Modell lernt nicht kontinuierlich. Neue Angriffstypen erfordern Retraining.
 		
@@ -565,49 +524,32 @@
 	\subsubsection{Zukünftige Arbeiten}
 	\begin{enumerate}
 		\item \textbf{Multi-Class-Klassifikation:} Erweiterung auf Angriffstyp-Erkennung
-		\item \textbf{Ensemble-Methoden:} Kombination von LinearSVC mit anderen Algorithmen (z.B. Random Forest, Isolation Forest von Projektpartnern)
+		\item \textbf{Ensemble-Methoden:} Kombination von LinearSVC mit anderen Algorithmen
 		
 		\item \textbf{Transfer Learning:} Training auf TON-IOT, Testing auf anderen Datensätzen (z.B. Gotham Dataset~\cite{belarbi2025})
-		
-		\item \textbf{Online Learning:} Implementierung von inkrementellem Learning für adaptive IDS
 		
 		\item \textbf{Explainability:} SHAP/LIME-Analysen um zu verstehen, welche Features für Angriffserkennung wichtig sind
 		
 		\item \textbf{Real-World-Testing:} Deployment in realer Netzwerkumgebung mit Monitoring von False Positive/Negative Rates
 	\end{enumerate}
-	\subsection{Integration mit Projektpartner-Ergebnissen}
-	Die finale Projektarbeit wird die hier präsentierten SVM-Ergebnisse mit den von Projektpartnern untersuchten Isolation Forest und Boosting-Verfahren kombinieren. Geplant ist:
-	\begin{itemize}
-		\item Gemeinsame Evaluation aller Algorithmen auf identischem Test Set
-		\item Vergleich auf zwei Hardware-Plattformen:
-		\begin{itemize}
-			\item High-Performance: AMD Ryzen 7 7840HS (wie hier verwendet)
-			\item Low-Power: Raspberry Pi 4 oder ähnliches Edge-Device
-		\end{itemize}
-		\item Unified Benchmark-Tabelle mit allen Metriken
-		\item Diskussion von Ensemble-Strategien (z.B. Voting zwischen SVM, Isolation Forest, XGBoost)
-	\end{itemize}
-	Dieser umfassende Vergleich wird wertvolle Insights für die praktische Auswahl von IDS-Algorithmen liefern.
+
 	%
 	% Kapitel 7: Zusammenfassung
 	%
 	\section{Zusammenfassung und Ausblick}
 	\label{sec:conclusion}
-	Diese Arbeit untersuchte drei Support Vector Machine Varianten (SVC mit RBF-Kernel, LinearSVC, SGDClassifier) für Anomalieerkennung im TON-IOT Network Datensatz. Der Fokus lag auf einem ganzheitlichen Vergleich, der neben klassischen Performanz-Metriken auch Ressourceneffizienz (Zeit, Speicher, Energie) berücksichtigte.
+	Diese Arbeit untersuchte  Support Vector Machine Varianten für Anomalieerkennung im TON-IOT Network Datensatz. Der Fokus lag auf einem ganzheitlichen Vergleich, der neben klassischen Performanz-Metriken auch Ressourceneffizienz (Zeit, Speicher, Energie) berücksichtigte.\\
 	\textbf{Hauptergebnisse:}
 	\begin{enumerate}
-		\item \textbf{Beste Detektionsqualität:} SVC mit RBF-Kernel erreicht perfekte Angriffserkennung (100\% Recall, F2-Score 0.9416), ist aber mit 257s Inferenzzeit für 31k Samples praktisch nicht einsetzbar.
-		\item \textbf{Bester Trade-off:} LinearSVC bietet hervorragende Detektionsqualität (98.74\% Recall, F2-Score 0.9798) bei 155x schnellerer Inferenz und deutlich geringerem Energieverbrauch. Dies ist die empfohlene Wahl für praktische Deployments.
+		\item \textbf{LinearSVC empfohlen:} LinearSVC bietet hervorragende Detektionsqualität (98.74\% Recall, F2-Score 0.9798) bei schneller Inferenz und geringem Energieverbrauch. Dies ist die empfohlene Wahl für praktische Deployments.
 		
-		\item \textbf{SGDClassifier ungeeignet:} Trotz Hyperparameter-Tuning erreicht SGD nur 65.76\% Recall und ist damit für Sicherheitsanwendungen unbrauchbar.
+		\item \textbf{OneClassSVM als Alternative:} Unser OCSVM-Modell weist zwar schlechtere Metriken auf, als unser LinearSVC-Modell, jedoch könnte es aufgrund des Trainings auf Normalverhalten geeigneter sein, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt wurden.
 		
-		\item \textbf{Deployment-Empfehlungen:} LinearSVC eignet sich sowohl für Edge-Geräte (schnell, energieeffizient) als auch Cloud-Deployments (hoher Durchsatz). Für maximale Sicherheit bei unbegrenzten Ressourcen kann SVC mit RBF-Kernel verwendet werden.
+		\item \textbf{SVC ungeeignet:} SVC mit RBF-Kernel erreicht zwar perfekte Angriffserkennung (100\% Recall, F2-Score 0.9416), ist aber mit 257s Inferenzzeit für 31k Samples praktisch nicht einsetzbar und lässt zu viele False Positives zu.
+		
+		\item \textbf{SGDClassifier ungeeignet:} Trotz Hyperparameter-Tuning erreicht unser SGD-Modell nur 65.76\% Recall und ist damit für Sicherheitsanwendungen unbrauchbar. Weiteres Hyperparameter-Tuning kann zu besseren Ergebnissen führen, jedoch ist kein Vorteil gegenüber LinearSVC zu erkennen.
+
 	\end{enumerate}
-	\textbf{Beitrag zur Projektarbeit:}
-	Diese Arbeit stellt den SVM-Teil einer umfassenden Benchmark-Studie dar. Die entwickelte Pipeline (Feature Engineering, Hyperparameter-Tuning, Resource Monitoring) ist modular aufgebaut und wird von Projektpartnern für Isolation Forest und Boosting-Verfahren wiederverwendet. Die finale Projektarbeit wird alle Algorithmen in einem unified Framework vergleichen und auf verschiedenen Hardware-Plattformen evaluieren.
-	\textbf{Ausblick:}
-	Zukünftige Arbeiten sollten sich auf Multi-Class-Klassifikation (Angriffstyp-Erkennung), Ensemble-Methoden und Transfer Learning auf neue Datensätze fokussieren. Besonders vielversprechend ist die Kombination von LinearSVC (für schnelle Filterung) mit komplexeren Modellen (für Nachverifikation) in einem Hybrid-Deployment.
-	Die hier erzielten Ergebnisse demonstrieren, dass klassische Machine-Learning-Methoden wie SVM bei sorgfältigem Feature Engineering und Hyperparameter-Tuning State-of-the-Art Performanz für IDS-Anwendungen erreichen können, ohne die Komplexität von Deep Learning.
 	
 	
 	\clearpage % - bei Bedarf diesen Seitenumbruch entfernen
