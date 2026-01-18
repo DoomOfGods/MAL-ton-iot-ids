@@ -3,6 +3,7 @@ ton_iot_utils.py
 Utility classes and functions for TON-IOT anomaly detection pipeline
 Claude Sonnet 4.5 was used for refactoring and to add comments and docstrings
 GitHub Copilot was used to assist with code
+Author: Kevin Paulus
 """
 
 import os
