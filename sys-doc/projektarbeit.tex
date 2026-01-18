@@ -209,9 +209,9 @@
 	Für diese Arbeit wurde der \textit{Train-Test Network} Teil des TON-IOT-Datensatzes verwendet. Die Daten wurden von Moustafa~\cite{moustafa2021} in einer kontrollierten Testumgebung mit realistischen IoT-Geräten und simulierten Angriffsszenarien erhoben. Der Datensatz umfasst 42 Features, die aus Netzwerk-Traffic extrahiert wurden, darunter:
 	\begin{itemize}
 		\item \textbf{Verbindungsinformationen:} Source/Destination IP, Ports, Protokoll
-		\item \textbf{Zeitliche Merkmale:} Verbindungsdauer, Paketintervalle
-		\item \textbf{Statistiken:} Anzahl Bytes/Pakete, Flag-Zustände
+		\item \textbf{Zeitliche Merkmale:} Verbindungsdauer
 		\item \textbf{Protokoll-spezifische Features:} DNS, HTTP, SSL-Attribute
+		\item \textbf{Weitere Features:} Anzahl Bytes/Pakete, Flag-Zustände
 	\end{itemize}
 	Auffällig ist die starke Unbalanciertheit: Ca. 76\% der 211.043 Samples sind als Angriffe gekennzeichnet. Dies entspricht nicht der Realität, in der Angriffe die Ausnahme des  Netzwerk-Traffics darstellen. Außerdem enthält der Datensatz ein binäres Label, das zwischen Angriff und normalem Verhalten unterscheidet, sowie ein kategoriales Label, welches den Angriffstypen enthält. 
 	\subsection{Datenaufteilung}
@@ -306,7 +306,7 @@
 	Die One-Class SVM (OCSVM) ist ein unüberwachter Klassifikator zur Anomalieerkennung, der nur auf normalem Netzwerkverkehr trainiert wird. Sie modelliert die Grenze des normalen Datenbereichs und klassifiziert Abweichungen als Angriffe. Dies ist besonders nützlich für Szenarien, in denen Angriffe selten oder bisher unbekannt sind. \\
 	Hyperparameter:
 	\begin{itemize}
-		\item $nu \in [0.01, 0.3]$: Erwarteter Anteil an Ausreißern im Trainingsdatensatz
+		\item $nu \in [0.01, 1]$: Obergrenze für Anteil der Training Errors und Untergrenze für den Anteil der Support Vectors
 		\item $\gamma \in \{\text{scale}, \text{auto}\}$: Kernel-Koeffizient
 		\item \texttt{kernel='rbf'}: Radial Basis Function Kernel
 	\end{itemize}
