@@ -7,6 +7,7 @@ GitHub Copilot was used to assist with code
 
 import numpy as np
 import pandas as pd
+from isotree import IsolationForest
 import optuna
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.preprocessing import RobustScaler, OneHotEncoder
@@ -484,7 +485,7 @@ def train_svm(X_train, y_train, mode='linearsvc', monitor=True, n_trials=200, ti
 # EVALUATION
 # ============================================================================
 
-def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation"):
+def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation",  isoforest_threshold=70):
     """
     Evaluate model performance
     
@@ -507,6 +508,11 @@ def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation")
     if is_one_class:
         print("\n Model type: OneClassSVM (unsupervised)")
         print("   Predictions: +1 (normal) → 0, -1 (anomaly) → 1")
+
+    # Check if Isolation Forest (Raphael Balzer)
+    is_isoforest = isinstance(model, IsolationForest)
+    if is_isoforest:
+        print("\n Model type: Isolation Forest (unsupervised)")
     
     # Monitor inference
     inference_monitor = ResourceMonitor(f"{dataset_name} Inference") if monitor else None
@@ -532,6 +538,12 @@ def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation")
         # OneClassSVM returns: +1 (normal), -1 (anomaly)
         # Convert to: 0 (normal), 1 (attack)
         y_pred = (y_pred_raw == -1).astype(int)
+    # Convert predictions for Isolation Forest (Raphael Balzer)
+    elif is_isoforest:
+        scores = model.predict(X_val)
+        threshold = np.percentile(scores, isoforest_threshold) 
+        y_pred = (scores > threshold).astype(int)
+
     else:
         y_pred = y_pred_raw
     
