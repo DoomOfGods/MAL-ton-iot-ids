@@ -1,7 +1,7 @@
 """
 ton_iot_pipeline.py
 Pipeline functions for data loading, preprocessing, training, and evaluation
-Claude Sonnet 4.5 was used to add comments and docstrings and for OCSVM mode in train_svm() and evaluate_model()
+Claude Sonnet 4.5 was used for refactoring, to add comments and docstrings and for the implementation of OCSVM mode in train_svm() and evaluate_model()
 GitHub Copilot was used to assist with codeblocks
 """
 
