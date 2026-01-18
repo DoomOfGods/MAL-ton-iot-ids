@@ -356,17 +356,11 @@
 			\toprule
 			\textbf{Komponente} & \textbf{System 1} & \textbf{System 2} \\
 			\midrule
-			\multicolumn{3}{l}{\textit{Hardware}} \\
-			CPU & \makecell{AMD Ryzen 7 7840HS \\ (8 Cores, 16 Threads, 4.7 GHz)} & \\
-			RAM & 64 GB DDR5 & \\
+			CPU & \makecell{AMD Ryzen 7 9800X3D \\ (8 Cores, 16 Threads, 4.7 GHz)} & \\
+			RAM & 64 GB& \\
 			OS & Windows 11 & \\
 			Python & 3.13.7 & \\
 			\midrule
-			\multicolumn{3}{l}{\textit{Software}} \\
-			scikit-learn & 1.6.0 & \\
-			optuna & 4.1.0 & \\
-			codecarbon & 2.7.3 & \\
-			\bottomrule
 		\end{tabular}
 	\end{table}
 
@@ -543,7 +537,7 @@
 	\begin{enumerate}
 		\item \textbf{LinearSVC empfohlen:} LinearSVC bietet hervorragende Detektionsqualität (98.74\% Recall, F2-Score 0.9798) bei schneller Inferenz und geringem Energieverbrauch. Dies ist die empfohlene Wahl für praktische Deployments.
 		
-		\item \textbf{OneClassSVM als Alternative:} Unser OCSVM-Modell weist zwar schlechtere Metriken auf, als unser LinearSVC-Modell, jedoch könnte es aufgrund des Trainings auf Normalverhalten geeigneter sein, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt wurden.
+		\item \textbf{OneClassSVM als Alternative:} Unser OCSVM-Modell weist zwar schlechtere Metriken als unser LinearSVC-Modell auf, jedoch ist anzunehmen, dass es aufgrund des Trainings auf Normalverhalten geeigneter ist, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt wurden.
 		
 		\item \textbf{SVC ungeeignet:} SVC mit RBF-Kernel erreicht zwar perfekte Angriffserkennung (100\% Recall, F2-Score 0.9416), ist aber mit 257s Inferenzzeit für 31k Samples praktisch nicht einsetzbar und lässt zu viele False Positives zu.
 		
