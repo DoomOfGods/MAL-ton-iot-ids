@@ -541,7 +541,7 @@
 	\begin{enumerate}
 		\item \textbf{LinearSVC empfohlen:} LinearSVC bietet hervorragende Detektionsqualität (98.74\% Recall, F2-Score 0.9798) bei schneller Inferenz und geringem Energieverbrauch. Dies ist die empfohlene Wahl für praktische Deployments.
 		
-		\item \textbf{OneClassSVM als Alternative:} Unser OCSVM-Modell weist zwar schlechtere Metriken als unser LinearSVC-Modell auf, jedoch ist anzunehmen, dass es aufgrund des Trainings auf Normalverhalten geeigneter ist, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt wurden.
+		\item \textbf{OneClassSVM als mögliche Alternative:} Unser OCSVM-Modell weist zwar schlechtere Metriken als unser LinearSVC-Modell auf, jedoch ist anzunehmen, dass es aufgrund des Trainings auf Normalverhalten geeigneter ist, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt wurden. Die Inferenz-Laufzeit von 23,7s kann jedoch zu sicherheitstechnischen Problemen führen.
 		
 		\item \textbf{SVC ungeeignet:} SVC mit RBF-Kernel erreicht zwar perfekte Angriffserkennung (100\% Recall, F2-Score 0.9416), ist aber mit 257s Inferenzzeit für 31k Samples praktisch nicht einsetzbar und lässt zu viele False Positives zu.
 		
