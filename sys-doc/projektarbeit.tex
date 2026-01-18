@@ -175,11 +175,11 @@
 	\subsection{Der TON-IOT-Datensatz}
 	Der TON-IOT-Datensatz enthält sowohl normale Netzwerkaktivitäten als auch verschiedene Angriffstypen. Im Gegensatz zu älteren Datensätzen wie KDD99 oder NSL-KDD enthält TON-IOT moderne IoT-spezifische Angriffsszenarien und ist durch seine Größe und Diversität besonders für das Training komplexer ML-Modelle geeignet~\cite{moustafa2021}.
 	\subsection{Evaluationsmetriken für Sicherheitsanwendungen}
-	Für IDS-Systeme sind spezialisierte Evaluationsmetriken erforderlich, die die unterschiedliche Kritikalität von Fehlern berücksichtigen:
+	Für IDS-Systeme sind spezialisierte Evaluationsmetriken sinnvoll, die Fehler unterschiedlich gewichten:
 	\begin{equation}
-		\text{F}\_\beta\text{-Score} = (1 + \beta^2) \cdot \frac{\text{Precision} \cdot \text{Recall}}{\beta^2 \cdot \text{Precision} + \text{Recall}}
+		\text{F}_\beta\text{-Score} = (1 + \beta^2) \cdot \frac{\text{Precision} \cdot \text{Recall}}{\beta^2 \cdot \text{Precision} + \text{Recall}}
 	\end{equation}
-	Der F2-Score $(\beta = 2)$ gewichtet Recall doppelt so stark wie Precision und ist daher für Sicherheitsanwendungen besonders geeignet, da False Negatives erheblich schwerwiegender sind als False Positives.
+	Der F2-Score $(\beta = 2)$ gewichtet Recall stärker als Precision und ist daher für Sicherheitsanwendungen besonders geeignet, da False Negatives erheblich gravierender sind als False Positives.
 	
 	\subsection{Benchmarks auf TON-IOT}
 	Uddin et al.~\cite{uddin2024} präsentierten einen umfassenden Benchmark verschiedener \linebreak ML-Algorithmen auf TON-IOT, darunter Random Forest, Isolation Forest, One-Class SVM und usfAD. 
@@ -256,11 +256,12 @@
 			Normal   	& 35.000 & 23.69 \\
 			DDoS     	& 14.000 & 9.48 \\
 			Scanning 	& 14.000 & 9.48 \\
+			Injection 	& 14.000 & 9.48 \\
 			Password 	& 14.000 & 9.48 \\
 			Ransomware	& 14.000  & 9.48  \\
 			XSS      	& 14.000  & 9.48  \\
 			Backdoor    & 14.000  & 9.48  \\
-			DOS		    & 14.000  & 9.48  \\
+			DoS		    & 14.000  & 9.48  \\
 			MITM	   	& 730  & 0.49  \\
 			\bottomrule
 		\end{tabular}
@@ -329,9 +330,9 @@
 		\item \textbf{Throughput:} Samples pro Sekunde bei Inferenz
 	\end{itemize}
 	\subsubsection{Speicherverbrauch}
-	Mittels \texttt{psutil} wurde der Peak Memory Usage gemessen. Dies ist besonders relevant für Edge-Deployment, wo Speicher limitiert ist.
+	Mittels \texttt{psutil} wurde die maximale Speicherauslastung gemessen. Dies ist besonders relevant für Edge-Deployment, wo Speicher limitiert ist.
 	\subsubsection{CPU-Auslastung}
-	Die CPU-Auslastung wurde während Training/Inferenz periodisch mittels \texttt{psutil} gesampelt. Dies gibt Aufschluss über Parallelisierungseffizienz und System-Load.
+	Die CPU-Auslastung wurde periodisch mittels \texttt{psutil} gesampelt.
 	\subsubsection{Energieverbrauch}
 	Der Energieverbrauch wurde mittels CodeCarbon~\cite{codecarbon} geschätzt. CodeCarbon trackt CPU- und GPU-Auslastung und berechnet basierend auf TDP und Laufzeit den Energieverbrauch in kWh sowie $CO\_2$-Emissionen.
 	
@@ -395,11 +396,11 @@
 		\item \textbf{OneClassSVM:} Erreicht eine ausgewogene Performanz mit F1-Score 0.8799 und F2-Score 0.8841. Die Precision (87.30\%) und Recall (88.69\%) liegen relativ dicht beieinander, was auf ein ausgeglichenes Verhältnis von Fehlalarmen zu verpassten Angriffen hinweist. Im Vergleich zu den überwachten SVM-Varianten zeigt OneClassSVM eine leicht geringere Accuracy (81.52\%), was typisch für unüberwachtes Lernen ist, da das Modell nur auf Normalverkehr trainiert wurde.
 
 	\end{itemize}
-	\subsection{Confusion Matrices}
+	\subsection{Konfusionsmatrizen}
 	Tabelle~\ref{tab:confusion} zeigt die Confusion Matrices für alle Modelle:
 	\begin{table}[h]
 		\centering
-		\caption{Confusion Matrices (Validation Set)}
+		\caption{Konfusionsmatrizen (Test Set)}
 		\label{tab:confusion}
 		\begin{tabular}{lcccc}
 			\toprule
@@ -414,7 +415,7 @@
 		\end{tabular}
 	\end{table}
 	
-	Die Confusion Matrices verdeutlichen die unterschiedlichen Trade-offs:
+	Die Konfusionsmatrizen verdeutlichen die unterschiedlichen Trade-offs:
 	\begin{itemize}
 		\item SVC minimiert FN (0) auf Kosten von FP (7.492)
 		\item LinearSVC balanciert FN (304) und FP (1.243)
@@ -515,9 +516,12 @@
 		
 		\item \textbf{Feature Drift:} Netzwerk-Traffic ändert sich über Zeit. Regelmäßige Re-Evaluation wäre nötig.
 	\end{enumerate}
-	\subsubsection{Zukünftige Arbeiten}
+	\subsubsection{Mögliche weiterführende Arbeiten}
 	\begin{enumerate}
+		\item \textbf{Weiteres Hyperparameter-Tuning:} Training besserer Modellen durch weiteres Hyperparameter-Tuning
+		
 		\item \textbf{Multi-Class-Klassifikation:} Erweiterung auf Angriffstyp-Erkennung
+		
 		\item \textbf{Ensemble-Methoden:} Kombination von LinearSVC mit anderen Algorithmen
 		
 		\item \textbf{Transfer Learning:} Training auf TON-IOT, Testing auf anderen Datensätzen (z.B. Gotham Dataset~\cite{belarbi2025})

@@ -1,6 +1,8 @@
 """
 ton_iot_utils.py
 Utility classes and functions for TON-IOT anomaly detection pipeline
+Claude Sonnet 4.5 was used to add comments and docstrings
+GitHub Copilot was used to assist with codeblocks
 """
 
 import os
@@ -23,7 +25,7 @@ from pathlib import Path
 class ResourceMonitor:
     """Monitor CPU, Memory, and Energy consumption during training"""
     
-    def __init__(self, label="Process", cpu_sample_interval=0.5):
+    def __init__(self, label="Process"):
         self.label = label
         self.cpu_samples = []
 
@@ -59,9 +61,6 @@ class ResourceMonitor:
             log_level='error'
         )
         self.emissions_tracker.start()
-
-        # CPU
-        psutil.cpu_percent(interval=None)
         
         print(f"Resource monitoring started for: {self.label}")
         

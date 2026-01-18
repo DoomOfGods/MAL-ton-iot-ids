@@ -1,6 +1,8 @@
 """
 ton_iot_pipeline.py
 Pipeline functions for data loading, preprocessing, training, and evaluation
+Claude Sonnet 4.5 was used to add comments and docstrings and for OCSVM mode in train_svm() and evaluate_model()
+GitHub Copilot was used to assist with codeblocks
 """
 
 import numpy as np
@@ -389,7 +391,7 @@ def train_svm(X_train, y_train, mode='linearsvc', monitor=True, n_trials=200, ti
         print(f"   Attack ratio in full training set: {(~normal_mask).sum() / len(y_train) * 100:.1f}%")
         
         def objective(trial):
-            nu = trial.suggest_float('nu', 0.01, 0.3)  # Expected fraction of outliers
+            nu = trial.suggest_float('nu', 0.01, 1)  # upper bound on the fraction of training errors and a lower bound of the fraction of support vectors
             gamma = trial.suggest_categorical('gamma', ['scale', 'auto'])
             
             model = OneClassSVM(
@@ -398,8 +400,6 @@ def train_svm(X_train, y_train, mode='linearsvc', monitor=True, n_trials=200, ti
                 kernel='rbf',
             )
             
-            # Custom validation strategy:
-            # Split normal data into train/val, add some attacks to validation
             n_val = min(5000, int(len(X_train_normal) * 0.2))
             indices = np.random.RandomState(42).permutation(len(X_train_normal))
             
