@@ -219,3 +219,5 @@ sys-doc/projektarbeit.blg
 sys-doc/projektarbeit.out
 sys-doc/projektarbeit.synctex.gz
 sys-doc/projektarbeit.toc
+
+mal-venv/*
