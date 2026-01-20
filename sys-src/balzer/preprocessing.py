@@ -1,3 +1,4 @@
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import RobustScaler, OneHotEncoder
 from ton_iot_utils import ContextAwareImputer
 import pandas as pd
@@ -98,7 +99,7 @@ class IsoForestPreprocessor:
             
         return df, new_features
     
-class CatBoostPreprocessor:
+class CatBoostPreprocessor(BaseEstimator, TransformerMixin):
     def __init__(self):
         self.continuous_cols = [
             "duration", "src_bytes", "dst_bytes", "missed_bytes",
@@ -115,22 +116,27 @@ class CatBoostPreprocessor:
             "ssl_cipher", "ssl_version", "http_method",
             "http_status_code", "http_resp_mime_types", "weird_name"
         ]
+        self.imputer = ContextAwareImputer(self.continuous_cols, self.categorical_cols)
+    
+    def fit(self, X, y=None):
+        return self
 
-    def preprocess(self, df: pd.DataFrame, train=True) -> pd.DataFrame:
-        df = df.copy()
-        df.replace('-', "na", inplace=True)
-        
-        # Grundreinigung bleibt gleich
+    def transform(self, X):
+        df = X.copy()
+        df = self.preprocess(df)
+        return df
+
+    def preprocess(self, df: pd.DataFrame) -> pd.DataFrame:
+        drop_list = ['dst_ip', 'src_ip', 'dst_port', 'src_port',]
+        df = df.drop(columns=[c for c in drop_list if c in df.columns])
+
+        df = self.imputer.transform(df)
+        df.replace('-', np.nan, inplace=True)
+
         df = cleanup_protocol_orphans(df, 'dns_')
         df = cleanup_protocol_orphans(df, 'http_')
-        df = df.drop(columns=['dst_ip', 'src_ip', 'dst_port', 'src_port', 
-                              "src_ip_bytes", "dst_ip_bytes", "dns_qclass", "dns_qtype"])
 
-        # WICHTIG: Kategorische Spalten explizit als String/Kategorie markieren
-        # CatBoost mag keine gemischten Typen oder echte NaNs in Kategorien während des Fits
-        # for col in self.categorical_cols:
-        #     if col in df.columns:
-        #         df[col] = df[col].astype(str).fillna('missing')
+        df[self.categorical_cols] = df[self.categorical_cols].astype(str)
 
         return df
 
