@@ -34,7 +34,7 @@
 \setlength{\headwidth}{\textwidth}			% Kopf- und Fusszeile so breit wie der Haupttext
 \fancyfoot[R]{\thepage} 					% Festlegung des Seitenstils: Seitenzahlen in der Fusszeile rechts
 \fancyfoot[L]{\IhreArbeit}					% Kapitelnr. und -Bezeichnung in der Fusszeile links
-\fancyhead[L]{ \IhrVornameEins\ \IhrNachnameEins,\ \IhrVornameZwei\ \IhrNachnameZwei,\ \IhrVornameDrei\ \IhrNachnameDrei}	% Vorname und Name in der Kopfzeile links
+\fancyhead[L]{\IhrVornameEins\ \IhrNachnameEins\ \& \IhrVornameZwei\ \IhrNachnameZwei}	% Vorname und Name in der Kopfzeile links
 \renewcommand{\sectionmark}[1]{	    		% Definition der Ausgabe des Kapitels
   \markboth{Abschnitt \thesection. #1}{}}
 \renewcommand{\headrulewidth}{0.5pt}		% Trennlinie zwischen Kopfzeile und Haupttext
@@ -102,10 +102,8 @@
 % 
 \newcommand*{\IhrVornameEins}{Raphael Josef}
 \newcommand*{\IhrNachnameEins}{Balzer}
-\newcommand*{\IhrVornameZwei}{Steven Michael}
-\newcommand*{\IhrNachnameZwei}{Fischer}
-\newcommand*{\IhrVornameDrei}{Kevin}
-\newcommand*{\IhrNachnameDrei}{Paulus}
+\newcommand*{\IhrVornameZwei}{Kevin}
+\newcommand*{\IhrNachnameZwei}{Paulus}
 \newcommand*{\IhrStudiengang}{Master Künstliche Intelligenz (MKI)}
 \newcommand*{\IhreArbeit}{Projektarbeit Machine Learning WiSe 2025/26}
 \newcommand*{\IhreSchluesselwoerter}{Intrusion Detection, Anomalieerkennung, TON-IOT, Netzwerksicherheit, Support Vector Machines}
@@ -117,7 +115,7 @@
             urlcolor=black, filecolor=black,
             menucolor=black]{hyperref}
 \hypersetup{pdftitle={\IhreArbeit},%
-	pdfauthor={ \IhrVornameEins\ \IhrNachnameEins,\ \IhrVornameZwei\ \IhrNachnameZwei,\ \IhrVornameDrei\ \IhrNachnameDrei},%
+    pdfauthor={\IhrVornameEins\ \IhrNachnameEins{} \& \IhrVornameZwei\ \IhrNachnameZwei},%
 	pdfkeywords={\IhreSchluesselwoerter}}
 
 
@@ -133,10 +131,8 @@
 		Fakultät Elektrotechnik, Medien und Informatik\\[.8cm]
 		\large \IhrErstpruefer\\[.8cm]
 		\Large \IhreArbeit\\[.8cm]
-		\large
-		\IhrVornameEins\ \IhrNachnameEins,
-		\ \IhrVornameZwei\ \IhrNachnameZwei,
-		\ \IhrVornameDrei\ \IhrNachnameDrei\\[.8cm]
+		\large \IhrVornameEins\ \IhrNachnameEins\ \&
+		\IhrVornameZwei\ \IhrNachnameZwei\\[.8cm]
 		\large Studiengang \IhrStudiengang\\[.8cm]
 		\today\\[2.5cm]
 	\end{center}
@@ -153,7 +149,7 @@
 	\subsection{Motivation und Problemstellung}
 	Mit der zunehmenden Digitalisierung und Vernetzung kritischer Infrastrukturen steigt auch die Bedrohung durch Cyberangriffe. Intrusion Detection Systeme (IDS) sind ein zentraler Bestandteil moderner Sicherheitsarchitekturen und dienen der Erkennung verdächtiger Aktivitäten in Computernetzwerken. Während traditionelle regelbasierte IDS-Ansätze auf bekannten Angriffsmustern basieren, ermöglichen Machine-Learning-Verfahren die Erkennung neuartiger Angriffe durch Anomalieerkennung.
 	Eine besondere Herausforderung in diesem Kontext ist die Unbalanciertheit der Daten. Da Netzwerke zumeist nicht angegriffen zu werden sind Angriffsdaten selten. Gleichzeitig ist die Konsequenz einer verpassten Attacke (False Negative) deutlich schwerwiegender als ein Fehlalarm (False Positive). Dies erfordert spezialisierte Evaluationsmetriken und Optimierungsstrategien, die Recall über Precision priorisieren.
-	Neben der Detektionsqualität gewinnt die Ressourceneffizienz zunehmend an Bedeutung. Mit dem Trend zu Edge Computing und IoT-Geräten müssen IDS-Algorithmen nicht nur akkurat, sondern auch ressourcenschonend sein. Daher ist die Frage nach einem geeigneten Trade-off zwischen Performanz und Effizienz von Relevanz. 
+	Neben der Detektionsqualität gewinnt die Ressourceneffizienz zunehmend an Bedeutung. Mit dem Trend zu Edge Computing und IoT-Geräten müssen IDS-Algorithmen nicht nur akkurat, sondern auch ressourcenschonend sein. Dadurch ergibt sich die Frage nach einem geeigneten Kompromiss zwischen Performanz und Effizienz. 
 	\subsection{Zielsetzung der Arbeit}
 	Das Ziel dieser Projektarbeit ist ein umfassender Vergleich verschiedener Machine-Learning-Algorithmen für Intrusion Detection hinsichtlich:
 	\begin{enumerate}
@@ -253,16 +249,16 @@
 			\toprule
 			\textbf{Angriffstyp} & \textbf{Anzahl} & \textbf{Anteil (\%)} \\
 			\midrule
-			Normal   	& 35.000 & 23.69 \\
-			DDoS     	& 14.000 & 9.48 \\
-			Scanning 	& 14.000 & 9.48 \\
-			Injection 	& 14.000 & 9.48 \\
-			Password 	& 14.000 & 9.48 \\
-			Ransomware	& 14.000  & 9.48  \\
-			XSS      	& 14.000  & 9.48  \\
-			Backdoor    & 14.000  & 9.48  \\
-			DoS		    & 14.000  & 9.48  \\
-			MITM	   	& 730  & 0.49  \\
+			Normal   	& 35.000 & 23,69 \\
+			DDoS     	& 14.000 & 9,48 \\
+			Scanning 	& 14.000 & 9,48 \\
+			Injection 	& 14.000 & 9,48 \\
+			Password 	& 14.000 & 9,48 \\
+			Ransomware	& 14.000 & 9,48  \\
+			XSS      	& 14.000 & 9,48  \\
+			Backdoor    & 14.000 & 9,48  \\
+			DoS		    & 14.000 & 9,48  \\
+			MITM	   	& 730  	 & 0,49  \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
@@ -380,45 +376,47 @@
 			\toprule
 			\textbf{Modell} & \textbf{F1} & \textbf{F2} & \textbf{Precision} & \textbf{Recall} & \textbf{Accuracy} \\
 			\midrule
-			SVC           & 0.8657 & 0.9416 & 0.7633 & 1.0000 & 0.7633 \\
-			LinearSVC     & 0.9686 & 0.9798 & 0.9505 & 0.9874 & 0.9511 \\
-			SGDClassifier & 0.6939 & 0.6717 & 0.7345 & 0.6576 & 0.5573 \\
-			OneClassSVM	  & 0.8799 & 0.8841 & 0.8730 & 0.8869 & 0.8152 \\
-			IF	 		  & ? & ? & ? & ? & ? \\
-			EIF	 		  & ? & ? & ? & ? & ? \\
-			SCIF	 	  & ? & ? & ? & ? & ? \\
-			FCF	 		  & ? & ? & ? & ? & ? \\
+			SVC           & 0,8657 & 0,9416 & 0,7633 & 1,0000 & 0,7633 \\
+			LinearSVC     & 0,9686 & 0,9798 & 0,9505 & 0,9874 & 0,9511 \\
+			SGDClassifier & 0,6939 & 0,6717 & 0,7345 & 0,6576 & 0,5573 \\
+			OneClassSVM	  & 0,8799 & 0,8841 & 0,8730 & 0,8869 & 0,8152 \\
+			IF	 		  & 0,8294 & 0,8273 & 0,8331 & 0,8258 & 0,7408 \\
+			EIF	 		  & 0,9025 & 0,9131 & 0,8855 & 0,9202 & 0,8483 \\
+			SCIF	 	  & 0,8938 & 0,8999 & 0,8840 & 0,9040 & 0,8362 \\
+			FCF	 		  & 0,8906 & 0,8949 & 0,8835 & 0,8978 & 0,8317 \\
+			Catboost	  & 0,9989 & 0,9989 & 0,9987 & 0,9990 & 0,9983 \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
 	
 	\textbf{Interpretation:}
 	\begin{itemize}
-		\item \textbf{SVC:} Erreicht perfekte Recall (100\%), d.h. kein einziger Angriff wird verpasst. Der Preis dafür sind 7.492 False Positives, was zu niedriger Precision (76.33\%) führt. Dies ist ein typischer Precision-Recall-Trade-off.
-		\item \textbf{LinearSVC:} Bietet den besten Balance mit F2-Score 0.9798. Verpasst nur 304 von 24.157 Angriffen (1.26\% Miss Rate) bei deutlich weniger False Positives (1.243) als SVC. Dies ist der praktikabelste Ansatz.
-		\item \textbf{SGDClassifier:} Zeigt signifikant schlechtere Performanz mit nur 65.76\% Detection Rate. Dies liegt vermutlich an suboptimaler Konvergenz trotz Hyperparameter-Tuning. SGD ist sensitiver gegenüber Hyperparametern als andere SVM-Varianten.
-		\item \textbf{OneClassSVM:} Erreicht eine ausgewogene Performanz mit F1-Score 0.8799 und F2-Score 0.8841. Die Precision (87.30\%) und Recall (88.69\%) liegen relativ dicht beieinander, was auf ein ausgeglichenes Verhältnis von Fehlalarmen zu verpassten Angriffen hinweist. Im Vergleich zu den überwachten SVM-Varianten zeigt OneClassSVM eine leicht geringere Accuracy (81.52\%), was typisch für unüberwachtes Lernen ist, da das Modell nur auf Normalverkehr trainiert wurde.
+		\item \textbf{SVC:} Erreicht perfekte Recall (100\%), d.h. kein einziger Angriff wird verpasst. Der Preis dafür sind 7.492 False Positives, was zu niedriger Precision (76{,}33\%) führt. Dies ist ein typischer Precision/Recall Tradeoff.
+		\item \textbf{LinearSVC:} Bietet eine gute Balance mit einem F2-Score von 0,9798 und verpasst nur 304 von 24.157 Angriffen (1{,}26\% Miss Rate) bei deutlich weniger False Positives (1.243) als SVC. 
+		\item \textbf{SGDClassifier:} Zeigt signifikant schlechtere Performanz mit nur 65,76\% Detection Rate. Dies liegt vermutlich an suboptimaler Konvergenz trotz Hyperparameter-Tuning. SGD ist sensitiver gegenüber Hyperparametern als andere SVM-Varianten.
+		\item \textbf{OneClassSVM:} Erreicht eine ausgewogene Performanz mit F1-Score 0,8799 und F2-Score 0,8841. Die Precision (87{,}30\%) und Recall (88{,}69\%) liegen relativ dicht beieinander, was auf ein ausgeglichenes Verhältnis von Fehlalarmen zu verpassten Angriffen hinweist. Im Vergleich zu den überwachten SVM-Varianten zeigt OneClassSVM eine leicht geringere Accuracy (81{,}52\%), was typisch für unüberwachtes Lernen ist, da das Modell nur auf Normalverkehr trainiert wurde.
 
 	\end{itemize}
 	\subsection{Konfusionsmatrizen}
-	Tabelle~\ref{tab:confusion} zeigt die Confusion Matrices für alle Modelle:
+	Tabelle~\ref{tab:confusion} zeigt die Werte der Konfusionsmatrizen für alle Modelle:
 	\begin{table}[h]
 		\centering
-		\caption{Konfusionsmatrizen (Test Set)}
+		\caption{Werte der Konfusionsmatrizen (Test Set)}
 		\label{tab:confusion}
 		\begin{tabular}{lcccc}
 			\toprule
 			\multirow{2}{*}{\textbf{Modell}} & \multicolumn{2}{c}{\textbf{Predicted Normal}} & \multicolumn{2}{c}{\textbf{Predicted Attack}} \\
 			& TN & FN & FP & TP \\
 			\midrule
-			SVC           & 8     & 0     & 7.492  & 24.157 \\
-			LinearSVC     & 6.257 & 304   & 1.243  & 23.853 \\
-			SGDClassifier & 1.758 & 8.271 & 5.742  & 15.886 \\
-			OneClassSVM   & 4.382 & 2.732 & 3.118  & 21.425 \\
-			IF	 		  & ? & ? & ? & ? \\
-			EIF	 		  & ? & ? & ? & ? \\
-			SCIF	 	  & ? & ? & ? & ? \\
-			FCF	 		  & ? & ? & ? & ? \\
+			SVC           & 8     & 0     & 7.492 & 24.157 \\
+			LinearSVC     & 6.257 & 304   & 1.243 & 23.853 \\
+			SGDClassifier & 1.758 & 8.271 & 5.742 & 15.886 \\
+			OneClassSVM   & 4.382 & 2.732 & 3.118 & 21.425 \\
+			IF	 		  & 3.504 & 4.208 & 3.996 & 19.949 \\
+			EIF	 		  & 4.625 & 1.927 & 2.875 & 22.230 \\
+			SCIF	 	  & 4.634 & 2.320 & 2.866 & 21.837 \\
+			FCF	 		  & 4.641 & 2.468 & 2.859 & 21.689 \\
+			Catboost	  & 7.469 & 24	  &    31 & 24.133 \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
@@ -431,7 +429,7 @@
 		 \item OneClassSVM balanciert FN (2.732) und FP (3.118).
 	\end{itemize}
 	\subsection{Ressourcenverbrauch}
-	Tabelle~\ref{tab:resources1} zeigt die gemessenen Ressourcenverbrauchsdaten auf System 1:
+	Tabelle~\ref{tab:resources1} zeigt die gemessenen Effizienzmetriken auf System 1:
 	\FloatBarrier
 	\begin{table}[h]
 		\centering
@@ -442,19 +440,20 @@
 			\textbf{Modell} & \textbf{Inference Time} & \textbf{Throughput} & \textbf{Peak RAM} & \textbf{Energy} & \textbf{Peak CPU} \\
 			& \textbf{(s)}           & \textbf{(samples/s)} & \textbf{(MB)} & \textbf{(kWh)} & \textbf{(\%)} \\
 			\midrule
-			SVC           & ? & ? & ? & ? & ? \\
-			LinearSVC     & ? & ? & ? & ? & ? \\
-			SGDClassifier & ? & ? & ? & ? & ? \\
-			OneClassSVM   & ? & ? & ? & ? & ? \\
-			IF	 		  & ? & ? & ? & ? & ? \\
-			EIF	 		  & ? & ? & ? & ? & ? \\
-			SCIF	 	  & ? & ? & ? & ? & ? \\
-			FCF	 		  & ? & ? & ? & ? & ? \\
+			SVC           & 276,34 & 114,56  &  700,97 & 0,00064 & 11,7 \\
+			LinearSVC     & 5,36   & 5906,42 &  551,98 & 0,00001 & 1,6 \\
+			SGDClassifier & 5,31   & 5963,27 &  611,89 & 0,00001 & 2,2 \\
+			OneClassSVM   & 25,61  & 1236,35 &  435,89 & 0,00005 & 5,9 \\
+			IF	 		  & 5,38   & 5881,31 &  551,04 & 0,00001 & 4,5 \\
+			EIF	 		  & 6,61   & 4792,06 &  420,14 & 0,00001 & 0,0 \\
+			SCIF	 	  & 5,36   & 5901,72 &  509,16 & 0,00001 & 1,8 \\
+			FCF	 		  & 5,34   & 5931,98 &  453,83 & 0,00001 & 2,8 \\
+			Catboost	  & 7,51   & 4214,13 & 1014,96 & 0,00002 & 6,2 \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
 	\FloatBarrier
-	Tabelle~\ref{tab:resources2} zeigt die gemessenen Ressourcenverbrauchsdaten auf System 2:
+	Tabelle~\ref{tab:resources2} zeigt die gemessenen Effizienzmetriken auf System 2:
 	\FloatBarrier
 	\begin{table}[h]
 		\centering
@@ -473,17 +472,19 @@
 	EIF  	      & - & - & - & - & - \\
 	SCIF		  & - & - & - & - & - \\
 	FCF			  & - & - & - & - & - \\
+	Catboost	  & - & - & - & - & - \\
 	\bottomrule
 \end{tabular}
 	\end{table}
 	\FloatBarrier
+	Es handelt sich hierbei um einmalige Messungen. Da wiederholte Messungen Schwankungen aufweisen, können Werte im tatsächlich Einsatz geringfügig von diesen Werten abweichen, jedoch sind diese Werte für Vergleichszwecke der Modelle ausreichend um extreme Abweichungen zu erkennen.
 	\textbf{Interpretation:}
 	\begin{itemize}
 		\item \textbf{Zeit:} SVC ist extrem langsam. Dies liegt an der Komplexität der RBF-Kernel-Berechnung für alle Support Vectors. Die anderen SVM-Modelle sind erheblich schneller.
 		
-		\item \textbf{Speicher:} SVC benötigt außerdem den meisten Arbeitsspeicher, allerdings ist der Unterschied gering, da scikit-learn effiziente Implementierungen nutzt.
+		\item \textbf{Speicher:} SVC benötigt außerdem den meisten Arbeitsspeicher, allerdings ist der Unterschied aufgrund der effizienten Implementierungen von scikit-learn gering.
 		
-		\item \textbf{Energie:} Aufgrund langer Inferenzzeit benötigt SVC ebenso am meisten Energie. Die schnellen LinearSVC und OneClassSVM Modelle sind daher weitaus energieeffizienter.
+		\item \textbf{Energie:} Aufgrund langer Inferenzzeit benötigt SVC ebenso am meisten Energie. Die schnellen Modelle sind daher weitaus energieeffizienter.
 	\end{itemize}
 
 	%
@@ -496,29 +497,29 @@
 	\textbf{SVC mit RBF-Kernel} bewertet nahezu jeden Netzwerkverkehr als Angriff und ist somit nicht für IDS geeignet.\\\\
 	\textbf{LinearSVC} bietet den besten Kompromiss:
 	\begin{itemize}
-		\item Sehr gute Detektionsqualität (98.74\% Recall, F2-Score 0.9798)
-		\item Nur 304 verpasste Angriffe (1.26\% Miss Rate)
-		\item Deutlich weniger Fehlalarme als SVC (1.243 vs. 7.492)
-		\item 180x schnellere Inferenz als SVC
-		\item Energieeffizient (0.0001 kWh)
+		\item Sehr gute Detektionsqualität (98,74\% Recall, F2-Score 0,9798)
+		\item Nur 304 verpasste Angriffe (1,26\% Miss Rate)
+		\item Erheblich weniger Fehlalarme als SVC (1.243 vs. 7.492)
+		\item Erheblich schnellere Inferenz als SVC
+		\item Energieeffizient (0,0001 kWh)
 	\end{itemize}
 	\textbf{Eignung:} Optimal für praktische Deployments, sowohl auf Servern als auch Edge-Geräten.\\
 	\textbf{SGDClassifier} zeigt enttäuschende Ergebnisse:
 	\begin{itemize}
-		\item Nur 65.76\% Recall (34.24\% Miss Rate!)
+		\item Nur 65,76\% Recall (34,24\% Miss Rate!)
 		\item Trotzdem viele False Positives (5.742)
-		\item Zwar schnell, aber unbrauchbar für Sicherheitsanwendungen
+		\item Schnell, aber aufgrund schlechten Recalls unbrauchbar für Sicherheitsanwendungen
 	\end{itemize}
-	\textbf{Ursachen:} SGD ist bekanntermaßen sensitiv gegenüber Hyperparametern und Datensatz-Charakteristiken. Die Unbalanciertheit und hohe Dimensionalität von TON-IOT scheinen SGD zu benachteiligen. Möglicherweise wären mehr Tuning-Trials oder adaptive Learning Rates (z.B. AdaGrad) hilfreich.
+	\textbf{Ursachen:} SGD ist bekanntermaßen sensitiv gegenüber Hyperparametern und Datensatz-Charakteristiken. Möglicherweise ist präziseres Hyperparameter-Tuning nötig, um bessere Ergebnisse zu erzielen.
 	\subsection{Vergleich mit Literatur-Benchmarks}
-	Uddin et al.~\cite{uddin2024} berichten für ihre usfAD-Methode F1-Scores im Bereich 0.996-0.991 auf TON-IOT. Unser LinearSVC (F1: 0.9686) ist vergleichbar bei deutlich geringerer Komplexität nur etwas schwächer.
-	Zahoor et al.~\cite{zahoor2025} berichten einen F1-Score von 0.91 für OCSVM, welcher zwischen den F1-Scores unseres OCSVM- und LinearSVC-Modellen liegt. Der F2-Score wird in den meisten Publikationen nicht berücksichtigt.
+	Uddin et al.~\cite{uddin2024} berichten für ihre usfAD-Methode F1-Scores von 0,99 auf TON-IOT. Unser LinearSVC (F1: 0,9686) ist bei geringerer Komplexität nur geringfügig schwächer.
+	Zahoor et al.~\cite{zahoor2025} berichten einen F1-Score von 0,91 für OCSVM, welcher zwischen den F1-Scores unserer OCSVM- und LinearSVC-Modellen liegt. Der F2-Score wird in den meisten Publikationen nicht berücksichtigt.
 	\subsection{Deployment-Szenarien}
 	Basierend auf den Ergebnissen lassen sich folgende Empfehlungen ableiten:\\
 	\textbf{LinearSVC:}
 	\begin{itemize}
-		\item Begründung: Schnelle Inferenz (19k samples/s), geringer Speicherbedarf, energieeffizient
-		\item Trade-off: 1.26\% Missed Attacks akzeptabel
+		\item Begründung: Gute Performanz, schnelle Inferenz, geringer Speicherbedarf, energieeffizient
+		\item Trade-off: 1,26\% Missed Attacks akzeptabel
 	\end{itemize}
 	\subsection{Limitationen und zukünftige Arbeiten}
 	\subsubsection{Limitationen}
@@ -538,7 +539,7 @@
 		
 		\item \textbf{Multi-Class-Klassifikation:} Erweiterung auf Angriffstyp-Erkennung
 		
-		\item \textbf{Ensemble-Methoden:} Kombination von LinearSVC mit anderen Algorithmen
+		\item \textbf{Ensemble-Methoden:} Kombination eines Supervised Models, wie Catboost oder LinearSVC mit einem Unsupervised Model, wie Isolation Forest oder OneClassSVM
 		
 		\item \textbf{Transfer Learning:} Training auf TON-IOT, Testing auf anderen Datensätzen (z.B. Gotham Dataset~\cite{belarbi2025})
 		
@@ -555,13 +556,13 @@
 	Diese Arbeit untersuchte  Support Vector Machine Varianten für Anomalieerkennung im TON-IOT Network Datensatz. Der Fokus lag auf einem ganzheitlichen Vergleich, der neben klassischen Performanz-Metriken auch Ressourceneffizienz (Zeit, Speicher, Energie) berücksichtigte.\\
 	\textbf{Hauptergebnisse:}
 	\begin{enumerate}
-		\item \textbf{LinearSVC empfohlen:} LinearSVC bietet hervorragende Detektionsqualität (98.74\% Recall, F2-Score 0.9798) bei schneller Inferenz und geringem Energieverbrauch. Dies ist die empfohlene Wahl für praktische Deployments.
+		\item \textbf{LinearSVC empfohlen:} LinearSVC bietet hervorragende Detektionsqualität (98,74\% Recall, F2-Score 0,9798) bei schneller Inferenz und geringem Energieverbrauch. Dies ist die empfohlene Wahl für praktische Deployments.
 		
-		\item \textbf{OneClassSVM als mögliche Alternative:} Unser OCSVM-Modell weist zwar schlechtere Metriken als unser LinearSVC-Modell auf, jedoch ist anzunehmen, dass es aufgrund des Trainings auf Normalverhalten geeigneter ist, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt wurden. Die Inferenz-Laufzeit von 23,7s kann jedoch zu sicherheitstechnischen Problemen führen.
+		\item \textbf{OneClassSVM als mögliche Alternative:} Unser OCSVM-Modell weist zwar schlechtere Metriken als unser LinearSVC-Modell auf, jedoch ist anzunehmen, dass es aufgrund des Trainings auf Normalverhalten geeigneter ist, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt werden. Die Inferenz-Laufzeit von 23,7s kann jedoch zu sicherheitstechnischen Problemen führen.
 		
-		\item \textbf{SVC ungeeignet:} SVC mit RBF-Kernel erreicht zwar perfekte Angriffserkennung (100\% Recall, F2-Score 0.9416), ist aber mit 257s Inferenzzeit für 31k Samples praktisch nicht einsetzbar und lässt zu viele False Positives zu.
+		\item \textbf{SVC ungeeignet:} SVC mit RBF-Kernel erreicht zwar perfekte Angriffserkennung (100\% Recall, F2-Score 0,9416), ist aber aufgrund der Inferenzzeit praktisch nicht einsetzbar und lässt zu viele False Positives zu.
 		
-		\item \textbf{SGDClassifier ungeeignet:} Trotz Hyperparameter-Tuning erreicht unser SGD-Modell nur 65.76\% Recall und ist damit für Sicherheitsanwendungen unbrauchbar. Weiteres Hyperparameter-Tuning kann zu besseren Ergebnissen führen, jedoch ist kein Vorteil gegenüber LinearSVC zu erkennen.
+		\item \textbf{SGDClassifier ungeeignet:} Trotz Hyperparameter-Tuning erreicht unser SGD-Modell nur 65,76\% Recall und ist damit für Sicherheitsanwendungen unbrauchbar. Weiteres Hyperparameter-Tuning kann zu besseren Ergebnissen führen, jedoch ist kein Vorteil gegenüber LinearSVC zu erkennen.
 
 	\end{enumerate}
 	
