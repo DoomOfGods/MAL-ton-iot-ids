@@ -10,6 +10,7 @@ Co-Author: Raphael Balzer (IF-related, marked with comments)
 import numpy as np
 import pandas as pd
 from isotree import IsolationForest
+from catboost import CatBoostClassifier, Pool
 import optuna
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.preprocessing import RobustScaler, OneHotEncoder
@@ -487,7 +488,15 @@ def train_svm(X_train, y_train, mode='linearsvc', monitor=True, n_trials=200, ti
 # EVALUATION
 # ============================================================================
 
-def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation",  isoforest_threshold=70):
+def evaluate_model(
+        model,
+        X_val,
+        y_val,
+        monitor=True,
+        dataset_name="Validation",
+        isoforest_threshold=70,
+        cat_features=None
+        ):
     """
     Evaluate model performance
     
@@ -510,12 +519,16 @@ def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation",
     if is_one_class:
         print("\n Model type: OneClassSVM (unsupervised)")
         print("   Predictions: +1 (normal) → 0, -1 (anomaly) → 1")
-
-    # Check if Isolation Forest (Raphael Balzer)
+    
+    # Check if Isolation Forest
     is_isoforest = isinstance(model, IsolationForest)
     if is_isoforest:
         print("\n Model type: Isolation Forest (unsupervised)")
     
+    is_catboost = isinstance(model, CatBoostClassifier)
+    if is_catboost:
+        print("\n Model type: CatBoostClassifier (supervised)")
+
     # Monitor inference
     inference_monitor = ResourceMonitor(f"{dataset_name} Inference") if monitor else None
     if inference_monitor:
@@ -532,22 +545,27 @@ def evaluate_model(model, X_val, y_val, monitor=True, dataset_name="Validation",
         )
         sampling_thread.start()
 
-    
-    y_pred_raw = model.predict(X_val)
-    
-    # Convert predictions for OneClassSVM
-    if is_one_class:
-        # OneClassSVM returns: +1 (normal), -1 (anomaly)
-        # Convert to: 0 (normal), 1 (attack)
-        y_pred = (y_pred_raw == -1).astype(int)
-    # Convert predictions for Isolation Forest (Raphael Balzer)
-    elif is_isoforest:
-        scores = model.predict(X_val)
-        threshold = np.percentile(scores, isoforest_threshold) 
-        y_pred = (scores > threshold).astype(int)
+    if is_catboost:
+        val_pool = Pool(data=X_val, label=y_val,
+                 cat_features=cat_features)
+        y_pred = model.predict(val_pool)
 
     else:
-        y_pred = y_pred_raw
+        y_pred_raw = model.predict(X_val)
+        
+        # Convert predictions for OneClassSVM
+        if is_one_class:
+            # OneClassSVM returns: +1 (normal), -1 (anomaly)
+            # Convert to: 0 (normal), 1 (attack)
+            y_pred = (y_pred_raw == -1).astype(int)
+        
+        elif is_isoforest:
+            scores = model.predict(X_val)
+            threshold = np.percentile(scores, isoforest_threshold) 
+            y_pred = (scores > threshold).astype(int)
+            
+        else:
+            y_pred = y_pred_raw
     
     # Stop sampling
     if sampling_thread:
