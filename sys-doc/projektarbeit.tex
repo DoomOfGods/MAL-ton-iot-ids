@@ -318,7 +318,7 @@
 	\end{enumerate}
 	Die Wahl des F2-Scores als Optimierungskriterium reflektiert die Anforderungen von Sicherheitsanwendungen: Ein verpasster Angriff ist kritischer als ein Fehlalarm. Der F2-Score gewichtet Recall stärker als Precision.
 	\subsection{Resource Monitoring}
-	Um einen umfassenden Vergleich zu ermöglichen, wurden systematisch Ressourcenverbrauchsdaten erfasst:
+	Um einen umfassenden Vergleich zu ermöglichen, wurden systematisch Daten zur Messung der Effizienz erfasst:
 	\subsubsection{Zeitmetriken}
 	\begin{itemize}
 		\item \textbf{Wall Time:} Gesamte verstrichene Zeit (inkl. I/O, System-Overhead)
@@ -508,7 +508,7 @@
 	\begin{itemize}
 		\item Nur 65,76\% Recall (34,24\% Miss Rate!)
 		\item Trotzdem viele False Positives (5.742)
-		\item Schnell, aber aufgrund schlechten Recalls unbrauchbar für Sicherheitsanwendungen
+		\item Schnell, aber aufgrund schlechten Recalls ungeeignet für Sicherheitsanwendungen
 	\end{itemize}
 	\textbf{Ursachen:} SGD ist bekanntermaßen sensitiv gegenüber Hyperparametern und Datensatz-Charakteristiken. Möglicherweise ist präziseres Hyperparameter-Tuning nötig, um bessere Ergebnisse zu erzielen.
 	\subsection{Vergleich mit Literatur-Benchmarks}
@@ -560,9 +560,9 @@
 		
 		\item \textbf{OneClassSVM als mögliche Alternative:} Unser OCSVM-Modell weist zwar schlechtere Metriken als unser LinearSVC-Modell auf, jedoch ist anzunehmen, dass es aufgrund des Trainings auf Normalverhalten geeigneter ist, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt werden. Die Inferenz-Laufzeit von 23,7s kann jedoch zu sicherheitstechnischen Problemen führen.
 		
-		\item \textbf{SVC ungeeignet:} SVC mit RBF-Kernel erreicht zwar perfekte Angriffserkennung (100\% Recall, F2-Score 0,9416), ist aber aufgrund der Inferenzzeit praktisch nicht einsetzbar und lässt zu viele False Positives zu.
+		\item \textbf{SVC ungeeignet:} SVC mit RBF-Kernel erreicht zwar perfekte Angriffserkennung (100\% Recall, F2-Score 0,9416), ist aber aufgrund der hohen Laufzeit praktisch nicht einsetzbar und lässt zu viele False Positives zu.
 		
-		\item \textbf{SGDClassifier ungeeignet:} Trotz Hyperparameter-Tuning erreicht unser SGD-Modell nur 65,76\% Recall und ist damit für Sicherheitsanwendungen unbrauchbar. Weiteres Hyperparameter-Tuning kann zu besseren Ergebnissen führen, jedoch ist kein Vorteil gegenüber LinearSVC zu erkennen.
+		\item \textbf{SGDClassifier ungeeignet:} Trotz Hyperparameter-Tuning erreicht unser SGD-Modell nur 65,76\% Recall und ist damit für Sicherheitsanwendungen ungeeignet. Weiteres Hyperparameter-Tuning kann zu besseren Ergebnissen führen, jedoch ist kein Vorteil gegenüber LinearSVC zu erkennen.
 
 	\end{enumerate}
 	
