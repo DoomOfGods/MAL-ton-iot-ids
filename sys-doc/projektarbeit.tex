@@ -519,15 +519,15 @@
 	\textbf{Modell} & \textbf{Inference Time} & \textbf{Throughput} & \textbf{Peak RAM} & \textbf{Energy} & \textbf{Peak CPU} \\
 	& \textbf{(s)}           & \textbf{(samples/s)} & \textbf{(MB)} & \textbf{(kWh)} & \textbf{(\%)} \\
 	\midrule
-	SVC           & - & - & - & - & - \\
-	LinearSVC     & - & - & - & - & - \\
-	SGDClassifier & - & - & - & - & - \\
-	OneClassSVM   & - & - & - & - & - \\
-	IF            & - & - & - & - & - \\
-	EIF  	      & - & - & - & - & - \\
-	SCIF		  & - & - & - & - & - \\
-	FCF			  & - & - & - & - & - \\
-	Catboost	  & - & - & - & - & - \\
+	SVC           & 314.13 &   100.78 & 498.04 & 0.01199 & 47.1 \\
+	LinearSVC     &   1.48 & 21252.21 & 359.84 & 0.00003 &  0.0 \\
+	SGDClassifier & 1.5194 & 20835.33 & 362.06 & 0.00003 &  0.0 \\
+	OneClassSVM   & 23.905 &  1324.30 & 359.61 & 0.00074 & 31.5 \\
+	IF            & 1.5358 & 20612.37 & 464.47 & 0.00004 & 15.0 \\
+	EIF  	      & 1.6395 & 19308.94 & 398.54 & 0.00005 & 0.0 \\
+	SCIF		  & 1.5996 & 19791.01 & 427.24 & 0.00005 & 0.0 \\
+	FCF			  & 2.0583 & 15379.87 & 449.16 & 0.00006 & 0.0 \\
+	Catboost	  & 5.8688 &  5394.13 & 482.61 & 0.00018 & 19.5 \\
 	\bottomrule
 \end{tabular}
 	\end{table}
@@ -611,9 +611,9 @@
 	Diese Arbeit untersuchte  Support Vector Machine Varianten für Anomalieerkennung im TON-IOT Network Datensatz. Der Fokus lag auf einem ganzheitlichen Vergleich, der neben klassischen Performanz-Metriken auch Ressourceneffizienz (Zeit, Speicher, Energie) berücksichtigte.\\
 	\textbf{Hauptergebnisse:}
 	\begin{enumerate}
-		\item \textbf{LinearSVC empfohlen:} LinearSVC bietet hervorragende Detektionsqualität (98,74\% Recall, F2-Score 0,9798) bei schneller Inferenz und geringem Ressourcenverbrauch. Dies ist die empfohlene Wahl für praktische Deployments.
+		\item \textbf{Catboost empfohlen:} Unser Catboost-Modell bietet die beste Performanz. F1-Score, F2-Score, Precision, Recall und Accuracy liegen über 0,99.
 		
-		\item \textbf{Catboost als mögliche Alternative:} Unser Catboost-Modell bietet die beste Performanz. F1-Score, F2-Score, Precision, Recall und Accuracy liegen über 0,99. Aufgrund des benötigten Arbeitsspeichers ist das Modell jedoch nicht für jedes Gerät geeignet.
+		\item \textbf{LinearSVC als mögliche Alternative:} LinearSVC bietet gute Detektionsqualität (98,74\% Recall, F2-Score 0,9798) bei schneller Inferenz und geringem Ressourcenverbrauch. Dies eine empfohlene Wahl für Edge Devices.
 		
 		\item \textbf{OneClassSVM als mögliche Alternative:} Unser OCSVM-Modell weist zwar schlechtere Performanzmetriken als unser LinearSVC-Modell auf, jedoch ist anzunehmen, dass es aufgrund des Trainings auf Normalverhalten geeigneter ist, um Angriffe zu erkennen, die nicht durch den TON-IOT Datensatz abgedeckt werden. Die Inferenz-Laufzeit von 23,7s kann jedoch zu sicherheitstechnischen Problemen führen.
 		
