@@ -1,3 +1,7 @@
+"""
+Author: Raphael Balzer
+GitHub Copilot was used to assist with code
+"""
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import RobustScaler, OneHotEncoder
 from ton_iot_utils import ContextAwareImputer
