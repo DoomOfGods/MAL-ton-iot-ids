@@ -22,7 +22,7 @@ sys-src/                          # Source code and Jupyter notebooks
 ├── ton_iot_train_svm.ipynb       # Train SVM models (SVC, LinearSVC, SGD, OCSVM)
 ├── ton_iot_inference.ipynb       # Run inference with saved models
 ├── ton_iot_compare_results.ipynb # Compare performance and efficiency across all models
-└── balzer/
+└── iforest_catboost/
     ├── eda.ipynb                     # Exploratory Data Analysis
     ├── catboost.ipynb                # CatBoost classifier training
     ├── iforest_raw.ipynb             # Isolation Forest on raw features
@@ -61,8 +61,8 @@ sys-doc/                          # Project documentation
 | LinearSVC | Supervised | `ton_iot_train_svm.ipynb` |
 | SGDClassifier | Supervised | `ton_iot_train_svm.ipynb` |
 | One-Class SVM (OCSVM) | Unsupervised (anomaly detection) | `ton_iot_train_svm.ipynb` |
-| Isolation Forest | Unsupervised (anomaly detection) | `balzer/iforest_*.ipynb` |
-| CatBoost | Supervised (gradient boosting) | `balzer/catboost.ipynb` |
+| Isolation Forest | Unsupervised (anomaly detection) | `iforest_catboost/iforest_*.ipynb` |
+| CatBoost | Supervised (gradient boosting) | `iforest_catboost/catboost.ipynb` |
 
 ---
 
@@ -96,10 +96,10 @@ sys-src/data/train_test_network.csv
 
 | Step | Notebook |
 |------|----------|
-| Exploratory Data Analysis | `sys-src/balzer/eda.ipynb` |
+| Exploratory Data Analysis | `sys-src/iforest_catboost/eda.ipynb` |
 | Train SVM / OCSVM models | `sys-src/ton_iot_train_svm.ipynb` |
-| Train Isolation Forest | `sys-src/balzer/iforest_*.ipynb` |
-| Train CatBoost | `sys-src/balzer/catboost.ipynb` |
+| Train Isolation Forest | `sys-src/iforest_catboost/iforest_*.ipynb` |
+| Train CatBoost | `sys-src/iforest_catboost/catboost.ipynb` |
 | Run inference | `sys-src/ton_iot_inference.ipynb` |
 | Compare all results | `sys-src/ton_iot_compare_results.ipynb` |
 
